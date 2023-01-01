@@ -43,7 +43,6 @@ export default function ResultsPage() {
     function fillDriverArray(data: any) {
       let results: DriverResults = {drivers: []};
       results.drivers = data?.entries.map((entry: any, index: any) => {
-        console.log(index);
         let driver = entry.drivers[0];
         let time = data.time[index]
         let gap = data.gap[index]

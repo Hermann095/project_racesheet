@@ -15,6 +15,8 @@ export default function ResultsTable(props: ResultsTableProbs) {
   let Results = props.Results;
   //console.log(Results);
 
+  //"https://countryflagsapi.com/png/" + row.nationality.toLowerCase()
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -39,7 +41,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="center"><img className="flag-icon" src={"https://countryflagsapi.com/png/" + row.nationality.toLowerCase()} crossOrigin="anonymous" alt={"flag_" + row.nationality.toLowerCase()}></img></TableCell>
+              <TableCell align="center"><img className="flag-icon" src={process.env.PUBLIC_URL + "/flags/" + row?.nationality} crossOrigin="anonymous" alt={"flag_" + row?.nationality}></img></TableCell>
               <TableCell align="center">{row.team}</TableCell>
               {row.sectors.map((sector_time, index) => (
                 <TableCell align='center'>
