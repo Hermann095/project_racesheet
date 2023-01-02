@@ -15,6 +15,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
   //const [showSectorBars, setShowSectorBars] = React.useState(true);
   
   let showSectorBars = props.showSectorBars;
+  let showEntryIcons = props.showEntryIcons;
   let Results = props.Results;
   let numSectors = 0
   if (Results !== undefined) {
@@ -22,6 +23,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
   }
   //console.log(Results);
 
+  //file:///C:/Users/tomi_/Desktop/alternate_f1/project_racesheet_flask_react/project_racesheet/carsets/test123/
 
   return (
     <TableContainer component={Paper}>
@@ -29,6 +31,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
+            {showEntryIcons ? <TableCell></TableCell> : <TableCell align="center">Number</TableCell>}
             <TableCell align="center">Nationality</TableCell>
             <TableCell align="center">Team</TableCell>
             {showSectorBars ? 
@@ -49,7 +52,10 @@ export default function ResultsTable(props: ResultsTableProbs) {
               <TableCell component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell align="center"><img className="flag-icon" src={process.env.PUBLIC_URL + "/flags/" + row?.nationality} crossOrigin="anonymous" alt={"flag_" + row?.nationality}></img></TableCell>
+              {showEntryIcons ? 
+                <TableCell align="center"><img className='entry-icon' src={"/images/carsets/" + props.carsetName + "/entry_icons/" + row?.number + ".png"} alt=""></img></TableCell> 
+                : <TableCell align="center">{row?.number}</TableCell>}
+              <TableCell align="center"><img className="flag-icon" src={process.env.PUBLIC_URL + "/flags/" + row?.nationality} alt={"flag_" + row?.nationality}></img></TableCell>
               <TableCell align="center">{row.team}</TableCell>
               {showSectorBars ? 
                 (<TableCell>

@@ -8,6 +8,7 @@ export interface DriverResults {
     drivers: Array<{
         name: string,
         nationality: string,
+        number: string,
         team: string,
         sectors: Array<string>,
         time: string,
@@ -19,7 +20,9 @@ export interface DriverResults {
 
 export interface ResultsTableProbs extends React.HTMLProps<HTMLBaseElement> {
     Results: DriverResults,
-    showSectorBars: boolean
+    showSectorBars: boolean,
+    showEntryIcons: boolean,
+    carsetName: string
 }
 
 export interface EventLogItem {

@@ -2,6 +2,7 @@ import os
 from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 from simulation.sim import runTestQualifying
+from pathlib import Path
 
 
 app = Flask(__name__)
@@ -47,6 +48,13 @@ def get_drivers():
 def run_qualifying():
     result = runTestQualifying()
     return result
+
+@app.route("/carset")
+def get_carset_path():
+    #dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../carsets/test123/"))
+    #carset_path = Path(dir_path)
+    #carset_path = file_path.parents[0] / "/carsets/test123/"
+    return {"name": "test123"}
 
 
 if __name__ == '__main__':

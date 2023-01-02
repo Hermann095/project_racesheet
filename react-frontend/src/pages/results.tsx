@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Container from '@mui/material/Container';
 
@@ -13,15 +13,19 @@ export default function ResultsPage() {
 
     const [fetchedData, setFetchedData] = useState<any>(null);
     const [resultData, setResultData] = useState<DriverResults>({drivers: []});
-    const [showSectorBars, setShowSectorBars] = useState(false);
 
-    /*useEffect(() => {
-      fetch("http://localhost:5000/drivers").then(res => res.json()).then(data => {
-        setFetchedData(data.drivers);
+    const [carsetName, setCarsetName] = useState("");
+
+    const [showSectorBars, setShowSectorBars] = useState(false);
+    const [showEntryIcons, setShowEntryIcons] = useState(false);
+
+    useEffect(() => {
+      fetch("http://localhost:5000/carset").then(res => res.json()).then(data => {
+        setCarsetName(data.name)
       });
     }, []);
 
-    useEffect(() => {
+    /*useEffect(() => {
       fillDriverArray()
     }, [fetchedData])
 
@@ -51,7 +55,7 @@ export default function ResultsPage() {
         let personal_best = {time: personal_best_object.time, sector_times: personal_best_object.sector_times}
         let sectors = data.fastest_lap[entry.number].sector_times
         
-        return {name: driver.name, nationality: driver.nation, team: entry.team, sectors: sectors, time: time, gap: gap, fastestLap: personal_best};
+        return {name: driver.name, nationality: driver.nation, number: entry.number, team: entry.team, sectors: sectors, time: time, gap: gap, fastestLap: personal_best};
       })
 
       let best_lap = {time: data?.best_sectors.time, sector_times: data?.best_sectors.sector_times};
@@ -63,6 +67,10 @@ export default function ResultsPage() {
       setShowSectorBars(checked)
     }
 
+    function handleEntryIconChange(event: any, checked: boolean) {
+      setShowEntryIcons(checked)
+    }
+
     return (
         <>
         <Container>
@@ -72,12 +80,15 @@ export default function ResultsPage() {
               </Grid>
               <Grid xs={4} display={"flex"} alignItems={"center"} justifyContent={"end"}>
                   <FormGroup>
+                    <FormControlLabel control={<Switch defaultChecked={showEntryIcons} onChange={handleEntryIconChange}/>} label="Entry Icons" />
+                  </FormGroup>
+                  <FormGroup>
                     <FormControlLabel control={<Switch defaultChecked={showSectorBars} onChange={handleSectorBarChange}/>} label="Sector Bars" />
                   </FormGroup>
                   <Button variant="contained" onClick={runQualifying}>Run Qualifying</Button>
               </Grid>
             </Grid>
-            <ResultsTable Results={resultData} showSectorBars={showSectorBars}></ResultsTable>
+            <ResultsTable carsetName={carsetName} Results={resultData} showSectorBars={showSectorBars} showEntryIcons={showEntryIcons}></ResultsTable>
             <EventLog events={fetchedData?.log}></EventLog>
         </Container>
         </>
