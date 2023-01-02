@@ -18,7 +18,8 @@ export interface DriverResults {
 }
 
 export interface ResultsTableProbs extends React.HTMLProps<HTMLBaseElement> {
-    Results: DriverResults
+    Results: DriverResults,
+    showSectorBars: boolean
 }
 
 export interface EventLogItem {

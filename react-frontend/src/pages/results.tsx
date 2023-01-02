@@ -6,13 +6,14 @@ import Container from '@mui/material/Container';
 import { DriverResults } from '../types/types';
 import ResultsTable from "../components/ResultsTable/ResultsTable";
 import EventLog from "../components/EventLog/EventLog";
-import { Button, Grid } from "@mui/material";
+import { Button, FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
 
 
 export default function ResultsPage() {
 
     const [fetchedData, setFetchedData] = useState<any>(null);
     const [resultData, setResultData] = useState<DriverResults>({drivers: []});
+    const [showSectorBars, setShowSectorBars] = useState(false);
 
     /*useEffect(() => {
       fetch("http://localhost:5000/drivers").then(res => res.json()).then(data => {
@@ -58,6 +59,9 @@ export default function ResultsPage() {
       setResultData(results);
     }
     
+    function handleSectorBarChange(event: any, checked: boolean) {
+      setShowSectorBars(checked)
+    }
 
     return (
         <>
@@ -67,12 +71,16 @@ export default function ResultsPage() {
                 <h1>{fetchedData?.session} Results</h1>
               </Grid>
               <Grid xs={4} display={"flex"} alignItems={"center"} justifyContent={"end"}>
+                  <FormGroup>
+                    <FormControlLabel control={<Switch defaultChecked={showSectorBars} onChange={handleSectorBarChange}/>} label="Sector Bars" />
+                  </FormGroup>
                   <Button variant="contained" onClick={runQualifying}>Run Qualifying</Button>
               </Grid>
             </Grid>
-            <ResultsTable Results={resultData}></ResultsTable>
+            <ResultsTable Results={resultData} showSectorBars={showSectorBars}></ResultsTable>
             <EventLog events={fetchedData?.log}></EventLog>
         </Container>
         </>
     );
 }
+

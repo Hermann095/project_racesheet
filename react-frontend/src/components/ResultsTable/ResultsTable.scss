@@ -15,3 +15,27 @@
 .flag-icon {
     max-width: 32px;
 }
+
+.sector-cell-container {
+    display: flex;
+
+    span {
+        width: calc(100% / var(--num-sectors));
+        height: 10px;
+        display: block;
+        float: left;
+        border: solid 1px black;
+    }
+}
+
+.fastest-time-cell {
+    background-color: #673ab7; //purple 500
+}
+
+.personal-best-cell {
+    background-color: #1b5e20; //green 900
+}
+
+.slower-time-cell {
+    background-color: #f9a825; //yellow 800
+}
