@@ -23,7 +23,8 @@ export interface ResultsTableProbs extends React.HTMLProps<HTMLBaseElement> {
 
 export interface EventLogItem {
     text: string,
-    detailLevel: string
+    detailLevel: string,
+    type: string
 }
 
 export interface EventLogProbs extends React.HTMLProps<HTMLBaseElement> {

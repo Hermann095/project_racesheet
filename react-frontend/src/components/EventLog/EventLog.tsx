@@ -6,13 +6,39 @@ import ListItemText from '@mui/material/ListItemText';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { EventLogProbs, EventLogItem } from '../../types/types';
 import { FormControl, FormLabel, Grid, Slider } from '@mui/material';
+import { red, orange, green, yellow, purple } from '@mui/material/colors';
 
 
 function renderRow(props: ListChildComponentProps) {
   const { data, index, style } = props;
 
+  let styleItem = {};
+
+  if (data[index].type === "default"){
+    styleItem = {}
+  } else if (data[index].type === "crash") {
+    styleItem = {backgroundColor: orange[900]}
+  } else if (data[index].type === "retirement") {
+    styleItem = {color: red[900]}
+  } else if (data[index].type === "newLeader") {
+    styleItem = {color: green[900]}
+  } else if (data[index].type === "yellowFlag") {
+    styleItem = {backgroundColor: yellow[900]}
+  } else if (data[index].type === "redFlag") {
+    styleItem = {backgroundColor: red[900]}
+  } else if (data[index].type === "purpleSector") {
+    styleItem = {color: purple[900]}
+  } else if (data[index].type === "fastestLap") {
+    styleItem = {backgroundColor: purple[900]}
+  } else if (data[index].type === "personalBest") {
+    styleItem = {backgroundColor: green[900]}
+  } else if (data[index].type === "mistake") {
+    styleItem = {color: orange[900]}
+  }
+
+
   return (
-    <ListItem style={style} key={index} component="div" disablePadding>
+    <ListItem style={style} key={index} component="div" disablePadding sx={styleItem}>
       <ListItemButton>
         <ListItemText primary={data[index]?.text} />
       </ListItemButton>

@@ -23,6 +23,21 @@ class LogDetailLevel(enum.Enum):
   def __getstate__(self):
     return self._name_
 
+class LogEventType(enum.Enum):
+  default = enum.auto()
+  crash = enum.auto()
+  retirement = enum.auto()
+  newLeader = enum.auto()
+  yellowFlag = enum.auto()
+  redFlag = enum.auto()
+  purpleSector = enum.auto()
+  fastestLap = enum.auto()
+  personalBest = enum.auto()
+  mistake = enum.auto()
+
+  def __getstate__(self):
+    return self._name_
+
 class SessionOptions():
   def __init__(self, skill_range = 1000, min_weight = 505, drag_multiplier = 1, low_speed_mult = 0.25, high_speed_mult = 0.25, acceleration_mult = 0.25, top_speed_mult = 0.25, weight_factor = 0.3, tyre_factor = 0.5, driver_mult = 2, random_range = 200) -> None:
     self.skill_range_ = skill_range
@@ -58,6 +73,7 @@ class Lap():
 class LogEntry():
   text: str
   detailLevel: LogDetailLevel
+  type: LogEventType
 
 class SessionResult():
   def __init__(self, session :SessionType, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict(), position_chart = [], log :list[LogEntry] = []) -> None:

@@ -1,6 +1,6 @@
 from random import randint
 from .race_engine import RaceEngine
-from .session import Lap, SessionResult, SessionType, LogDetailLevel
+from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType
 from .track import MicroSector, Track
 from .race_entry import RaceEntry
 import simulation.utils as utils
@@ -168,22 +168,22 @@ class SheetEngine(RaceEngine):
     mistake_severity = randint(0, 100)
 
     if mistake_severity <= 50:
-      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a minor mistake " + track_part_name, LogDetailLevel.high)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a minor mistake " + track_part_name, LogDetailLevel.high, LogEventType.mistake)
       return randint(100, 300) / 1000
     elif mistake_severity <= 75:
-      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a small mistake " + track_part_name, LogDetailLevel.high)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a small mistake " + track_part_name, LogDetailLevel.high, LogEventType.mistake)
       return randint(200, 500) / 1000
     elif mistake_severity <= 90:
-      self.addLogEntry(entry.drivers[entry.current_driver].name + " made an error " + track_part_name, LogDetailLevel.high)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " made an error " + track_part_name, LogDetailLevel.high, LogEventType.mistake)
       return randint(400, 1000) / 1000
     elif mistake_severity <= 97:
-      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a big mistake " + track_part_name, LogDetailLevel.high)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a big mistake " + track_part_name, LogDetailLevel.high, LogEventType.mistake)
       return randint(900, 3000) / 1000
     elif mistake_severity <= 99:
-      self.addLogEntry(entry.drivers[entry.current_driver].name + " spun " + track_part_name, LogDetailLevel.medium)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " spun " + track_part_name, LogDetailLevel.medium, LogEventType.mistake)
       return randint(4000, 10000) / 1000
     else:
-      self.addLogEntry(entry.drivers[entry.current_driver].name + " crashed " + track_part_name)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " crashed " + track_part_name, LogEventType.crash)
       return FLOAT_MAX
 
   def constructSessionResults(self, session_type :SessionType) -> SessionResult:
