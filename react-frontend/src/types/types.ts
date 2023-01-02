@@ -21,8 +21,13 @@ export interface ResultsTableProbs extends React.HTMLProps<HTMLBaseElement> {
     Results: DriverResults
 }
 
+export interface EventLogItem {
+    text: string,
+    detailLevel: string
+}
+
 export interface EventLogProbs extends React.HTMLProps<HTMLBaseElement> {
-    events: Array<string>
+    events: Array<EventLogItem>
 }
 
 

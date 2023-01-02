@@ -15,7 +15,6 @@ export default function ResultsTable(props: ResultsTableProbs) {
   let Results = props.Results;
   //console.log(Results);
 
-  //"https://countryflagsapi.com/png/" + row.nationality.toLowerCase()
 
   return (
     <TableContainer component={Paper}>

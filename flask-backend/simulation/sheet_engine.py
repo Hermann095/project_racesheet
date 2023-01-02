@@ -1,6 +1,6 @@
 from random import randint
 from .race_engine import RaceEngine
-from .session import Lap, SessionResult, SessionType
+from .session import Lap, SessionResult, SessionType, LogDetailLevel
 from .track import MicroSector, Track
 from .race_entry import RaceEntry
 import simulation.utils as utils
@@ -25,7 +25,7 @@ class SheetEngine(RaceEngine):
     return result
 
   def hello_message(self, session :SessionType):
-    self.log.append("Hello from a " + str(session) + " session at " + str(self.track_.name) + ", " + str(self.track_.nation))
+    self.addLogEntry("Hello from a " + str(session._name_) + " session at " + str(self.track_.name) + ", " + str(self.track_.nation), LogDetailLevel.high)
 
   def practice(self):
     self.hello_message(SessionType.Practice)
@@ -53,7 +53,7 @@ class SheetEngine(RaceEngine):
     self.calcLap(SessionType.Race)
 
   def calcLap(self, session :SessionType):
-    self.log.append("calculate lap time...")
+    self.addLogEntry("calculate lap time...", LogDetailLevel.high)
 
     print("new lap")
 
@@ -168,22 +168,22 @@ class SheetEngine(RaceEngine):
     mistake_severity = randint(0, 100)
 
     if mistake_severity <= 50:
-      self.log.append(entry.drivers[entry.current_driver].name + " made a minor mistake " + track_part_name)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a minor mistake " + track_part_name, LogDetailLevel.high)
       return randint(100, 300) / 1000
     elif mistake_severity <= 75:
-      self.log.append(entry.drivers[entry.current_driver].name + " made a small mistake " + track_part_name)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a small mistake " + track_part_name, LogDetailLevel.high)
       return randint(200, 500) / 1000
     elif mistake_severity <= 90:
-      self.log.append(entry.drivers[entry.current_driver].name + " made an error " + track_part_name)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " made an error " + track_part_name, LogDetailLevel.high)
       return randint(400, 1000) / 1000
     elif mistake_severity <= 97:
-      self.log.append(entry.drivers[entry.current_driver].name + " made a big mistake " + track_part_name)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " made a big mistake " + track_part_name, LogDetailLevel.high)
       return randint(900, 3000) / 1000
     elif mistake_severity <= 99:
-      self.log.append(entry.drivers[entry.current_driver].name + " spun " + track_part_name)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " spun " + track_part_name, LogDetailLevel.medium)
       return randint(4000, 10000) / 1000
     else:
-      self.log.append(entry.drivers[entry.current_driver].name + " crashed " + track_part_name)
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " crashed " + track_part_name)
       return FLOAT_MAX
 
   def constructSessionResults(self, session_type :SessionType) -> SessionResult:

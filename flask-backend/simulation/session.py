@@ -15,6 +15,14 @@ class SessionType(enum.Enum):
   def __getstate__(self):
     return self._name_
 
+class LogDetailLevel(enum.Enum):
+  low = enum.auto()
+  medium = enum.auto()
+  high = enum.auto()
+
+  def __getstate__(self):
+    return self._name_
+
 class SessionOptions():
   def __init__(self, skill_range = 1000, min_weight = 505, drag_multiplier = 1, low_speed_mult = 0.25, high_speed_mult = 0.25, acceleration_mult = 0.25, top_speed_mult = 0.25, weight_factor = 0.3, tyre_factor = 0.5, driver_mult = 2, random_range = 200) -> None:
     self.skill_range_ = skill_range
@@ -46,8 +54,13 @@ class Lap():
       "sector_times": list(map(utils.secToTimeStr, self.sector_times))
     }
 
+@dataclass
+class LogEntry():
+  text: str
+  detailLevel: LogDetailLevel
+
 class SessionResult():
-  def __init__(self, session :SessionType, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict(), position_chart = [], log :list[str] = []) -> None:
+  def __init__(self, session :SessionType, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict(), position_chart = [], log :list[LogEntry] = []) -> None:
     self.session_ = session
     self.entries_ = entries
     self.time_ = time
@@ -65,7 +78,7 @@ class SessionResult():
 
   def printLog(self):
     for log_entry in self.log_:
-      print(log_entry)
+      print(log_entry.text)
 
   def printResults(self):
     print("Results from " + str(self.session_))

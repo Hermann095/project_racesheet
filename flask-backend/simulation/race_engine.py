@@ -65,13 +65,13 @@ class RaceEngine():
     try:
       if lap.time < self.fastest_lap.get(entry.number).time:
         self.fastest_lap[entry.number] = lap
-        self.log.append(entry.drivers[entry.current_driver].name + " set a new personal best of " + utils.secToTimeStr(lap.time))
+        self.addLogEntry(entry.drivers[entry.current_driver].name + " set a new personal best of " + utils.secToTimeStr(lap.time))
         self.DEBUG_print_lap(lap)
       else:
-        self.log.append(entry.drivers[entry.current_driver].name + " set a laptime of " + utils.secToTimeStr(lap.time))
+        self.addLogEntry(entry.drivers[entry.current_driver].name + " set a laptime of " + utils.secToTimeStr(lap.time), session.LogDetailLevel.medium)
     except:
       self.fastest_lap[entry.number] = lap
-      self.log.append(entry.drivers[entry.current_driver].name + " set a first lap of " + utils.secToTimeStr(lap.time))
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " set a first lap of " + utils.secToTimeStr(lap.time))
       self.DEBUG_print_lap(lap)
       
 
@@ -106,6 +106,10 @@ class RaceEngine():
       return True
     except:
       return False
+
+  def addLogEntry(self, message: str, detail_level: session.LogDetailLevel = session.LogDetailLevel.low):
+    new_entry = session.LogEntry(message, detail_level)
+    self.log.append(new_entry)
 
   def DEBUG_print_lap(self, lap :session.Lap):
     driver_name = lap.entry.drivers[lap.entry.current_driver].name
