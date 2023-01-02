@@ -23,13 +23,13 @@ function renderRow(props: ListChildComponentProps) {
   } else if (data[index].type === "newLeader") {
     styleItem = {color: green[900]}
   } else if (data[index].type === "yellowFlag") {
-    styleItem = {backgroundColor: yellow[900]}
+    styleItem = {backgroundColor: yellow[800]}
   } else if (data[index].type === "redFlag") {
     styleItem = {backgroundColor: red[900]}
   } else if (data[index].type === "purpleSector") {
     styleItem = {color: purple[900]}
   } else if (data[index].type === "fastestLap") {
-    styleItem = {backgroundColor: purple[900]}
+    styleItem = {backgroundColor: purple[500]}
   } else if (data[index].type === "personalBest") {
     styleItem = {backgroundColor: green[900]}
   } else if (data[index].type === "mistake") {
