@@ -133,6 +133,7 @@ class SessionResult():
           if lap.sector_times[sector_index] < best_lap.sector_times[sector_index]:
             best_lap.sector_times[sector_index] = lap.sector_times[sector_index]
           
+    best_lap.time = sum(best_lap.sector_times)
 
     return best_lap
 

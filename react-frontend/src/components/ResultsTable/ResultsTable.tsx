@@ -9,6 +9,7 @@ import Paper from '@mui/material/Paper';
 
 import { ResultsTableProbs } from '../../types/types';
 import "../ResultsTable/ResultsTable.scss"
+import { TableFooter } from '@mui/material';
 
 export default function ResultsTable(props: ResultsTableProbs) {
 
@@ -16,6 +17,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
   
   let showSectorBars = props.showSectorBars;
   let showEntryIcons = props.showEntryIcons;
+  let showTheoreticalBest = props.showTheoreticalBest;
   let Results = props.Results;
   let numSectors = 0
   if (Results !== undefined) {
@@ -78,6 +80,22 @@ export default function ResultsTable(props: ResultsTableProbs) {
             </TableRow>
           ))}
         </TableBody>
+        { showTheoreticalBest ?
+        <TableFooter>
+          <TableRow>
+            <TableCell>Theoretical best</TableCell>
+            {showEntryIcons ? <TableCell></TableCell> : <TableCell align="center"></TableCell>}
+            <TableCell align="center"></TableCell>
+            <TableCell align="center"></TableCell>
+            {showSectorBars ? 
+              <TableCell align='center'></TableCell>
+            : Results.bestLap?.sector_times.map((sector, index) => (
+                <TableCell align='center'>{sector}</TableCell>
+            ))}
+            <TableCell align="center">{Results.bestLap?.time}</TableCell>
+            <TableCell align="center"></TableCell>
+          </TableRow>
+        </TableFooter> : null}
       </Table>
     </TableContainer>
   );

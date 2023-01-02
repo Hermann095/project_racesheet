@@ -22,6 +22,7 @@ export interface ResultsTableProbs extends React.HTMLProps<HTMLBaseElement> {
     Results: DriverResults,
     showSectorBars: boolean,
     showEntryIcons: boolean,
+    showTheoreticalBest: boolean,
     carsetName: string
 }
 

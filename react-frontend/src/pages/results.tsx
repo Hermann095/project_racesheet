@@ -18,6 +18,7 @@ export default function ResultsPage() {
 
     const [showSectorBars, setShowSectorBars] = useState(false);
     const [showEntryIcons, setShowEntryIcons] = useState(false);
+    const [showTheoreticalBest, setShowTheoreticalBest] = useState(false);
 
     useEffect(() => {
       fetch("http://localhost:5000/carset").then(res => res.json()).then(data => {
@@ -71,14 +72,21 @@ export default function ResultsPage() {
       setShowEntryIcons(checked)
     }
 
+    function handleTheoreticalBest(event: any, checked: boolean) {
+      setShowTheoreticalBest(checked)
+    }
+
     return (
         <>
         <Container>
             <Grid container>
-              <Grid xs={8}>
+              <Grid xs={6}>
                 <h1>{fetchedData?.session} Results</h1>
               </Grid>
-              <Grid xs={4} display={"flex"} alignItems={"center"} justifyContent={"end"}>
+              <Grid xs={6} display={"flex"} alignItems={"center"} justifyContent={"end"}>
+                  <FormGroup>
+                    <FormControlLabel control={<Switch defaultChecked={showTheoreticalBest} onChange={handleTheoreticalBest}/>} label="Theoretical Best" />
+                  </FormGroup>
                   <FormGroup>
                     <FormControlLabel control={<Switch defaultChecked={showEntryIcons} onChange={handleEntryIconChange}/>} label="Entry Icons" />
                   </FormGroup>
@@ -88,7 +96,7 @@ export default function ResultsPage() {
                   <Button variant="contained" onClick={runQualifying}>Run Qualifying</Button>
               </Grid>
             </Grid>
-            <ResultsTable carsetName={carsetName} Results={resultData} showSectorBars={showSectorBars} showEntryIcons={showEntryIcons}></ResultsTable>
+            <ResultsTable carsetName={carsetName} Results={resultData} showSectorBars={showSectorBars} showEntryIcons={showEntryIcons} showTheoreticalBest={showTheoreticalBest}></ResultsTable>
             <EventLog events={fetchedData?.log}></EventLog>
         </Container>
         </>
