@@ -12,10 +12,16 @@ import ResultsPage from './pages/results';
 import StandingsPage from './pages/standings';
 import Navbar from './components/Navbar/navbar';
 
+const socket = io("localhost:5000/", {
+  transports: ["websocket"],
+  cors: {
+    origin: "http://localhost:3000/",
+  },
+});
 
 function App() {
 
-  const [socketInstance, setSocketInstance] = useState("");
+  //const [socketInstance, setSocketInstance] = useState("");
   //const [loadedSocket, setLoadedSocket] = useState(false);
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -42,14 +48,9 @@ function App() {
   );
 
   useEffect(() => {
-    const socket = io("localhost:5000/", {
-      transports: ["websocket"],
-      cors: {
-        origin: "http://localhost:3000/",
-      },
-    });
+    
 
-    setSocketInstance(socket);
+    //setSocketInstance(socket);
 
     socket.on("connect", (data) => {
       console.log(data);
@@ -65,12 +66,15 @@ function App() {
     })
 
     return function cleanup() {
-      socket.disconnect();
+      //socket.disconnect();
+      socket.offAny();
     }
   }, []);
 
-  function runQualifyingSocket() {
-    socketInstance.emit("run_qualifying");
+  function runQualifyingSocket(message) {
+    console.log("sending message");
+    console.log(message);
+    socket.emit("run_qualifying", message);
   }
 
 
@@ -80,9 +84,9 @@ function App() {
       <Router>
         <Navbar toggleColorMode={colorMode.toggleColorMode} darkMode={darkMode}></Navbar>
         <Routes>
-          <Route exact path='/' element={<HomePage socketInstance={socketInstance}/>} />
-          <Route path="/results" element={<ResultsPage socketInstance={socketInstance} onRunQualifying={runQualifyingSocket}/>} />
-          <Route path="/standings" element={<StandingsPage socketInstance={socketInstance}/>} />
+          <Route exact path='/' element={<HomePage />} />
+          <Route path="/results" element={<ResultsPage  onRunQualifying={(message) => runQualifyingSocket(message)}/>} />
+          <Route path="/standings" element={<StandingsPage />} />
         </Routes>
       </Router>
     </ThemeProvider>

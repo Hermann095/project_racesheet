@@ -33,7 +33,8 @@ export default function ResultsPage(props: any) {
         setFetchedData(data);
         fillDriverArray(data);
       });
-      props.onRunQualifying({greeting: "hello", data: "some data from qualifying front end", printResults: false});
+      let message = {greeting: "hello", data: "some data from qualifying front end", printResults: false} 
+      props.onRunQualifying(message);
     }
 
     function fillDriverArray(data: any) {

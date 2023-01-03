@@ -3,7 +3,7 @@ from flask import Flask, request, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from simulation.sim import runTestQualifying
-import json
+import json as JSON
 
 
 app = Flask(__name__)
@@ -72,11 +72,11 @@ def disconnected():
     emit("disconnect",f"user {request.sid} disconnected",broadcast=True)
 
 @socketio.on("run_qualifying")
-def run_ws_qualifying(message):
+def run_ws_qualifying(json):
     print("recieved run_qualifying")
-    print(message)
-    printResults = json.loads(message)
-    result = runTestQualifying(printResults["printResults"])
+    print((str(json)))
+    #printResults = JSON.loads(json)
+    result = runTestQualifying(json["printResults"])
     emit("update_qualifying_results", result)
 
 
