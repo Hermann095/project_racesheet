@@ -46,13 +46,15 @@ class SheetEngine(RaceEngine):
 
     for i in range(numQualiLaps):
       self.calcLap(SessionType.Qualifying)
+      self.record_fastest_lap() 
       results = self.constructSessionResults(SessionType.Qualifying)
-      self.record_fastest_lap()
+      #self.record_fastest_lap()
       self.socket.emit("update_qualifying_results", jsonpickle.encode(results, unpicklable=False))
       self.socket.sleep(2)
 
-    results = self.constructSessionResults(SessionType.Qualifying)
     self.record_fastest_lap() 
+    results = self.constructSessionResults(SessionType.Qualifying)
+    
     #for entry in self.entry_list_:
     #  self.DEBUG_print_lap(self.lap_list_[self.position_dict_.get(entry.number)][0])
     
