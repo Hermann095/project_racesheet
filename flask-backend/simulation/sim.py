@@ -10,7 +10,7 @@ import simulation.utils as utils
 import jsonpickle
 
 
-def runTestQualifying():
+def runTestQualifying(printResults: bool):
     rm = race_manager.RaceManager()
     entry_a = RaceEntry("13", "Team A", "#000000", Chassis("Chassis A", "Team A", 500, 500, 500, 500, 350, 500), Engine("Engine A", 500, 500, 500, 500, 500, 155, 500), Tyres("Tyre A", 500, 500, 500, 500), [Driver("Heinz-Harald Frentzen", "GER", "Team A", 500, 500, 500, 500, 500)])
     entry_a2 = RaceEntry("46", "Team A", "#5313EB", Chassis("Chassis A", "Team A", 500, 500, 500, 500, 350, 500), Engine("Engine A", 500, 500, 500, 500, 500, 155, 500), Tyres("Tyre A", 500, 500, 500, 500), [Driver("a2", "FIN", "Team A", 500, 500, 500, 500, 500)])
@@ -21,8 +21,9 @@ def runTestQualifying():
     entry_list = [entry_a, entry_a2, entry_b, entry_b2, entry_c, entry_c2]
     rm.setEntryList(entry_list)
     result = rm.startSession(SessionType.Qualifying)
-    result.printLog()
-    result.printResults()
+    if printResults:
+        result.printLog()
+        result.printResults()
     return buildResults(result)
     
 

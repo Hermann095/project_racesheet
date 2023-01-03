@@ -55,7 +55,7 @@ class SheetEngine(RaceEngine):
   def calcLap(self, session :SessionType):
     self.addLogEntry("calculate lap time...", LogDetailLevel.high)
 
-    print("new lap")
+    #print("new lap")
 
     sector_dict = dict()
     micro_sector_dict = dict()
@@ -79,7 +79,7 @@ class SheetEngine(RaceEngine):
         if self.isRetired(entry.number):
           continue
         sector_time = sum(micro_sector_dict.get(entry.number))
-        print("#" + entry.number + " " + utils.secToTimeStr(sector_time))
+        #print("#" + entry.number + " " + utils.secToTimeStr(sector_time))
         old_sector_list = sector_dict.get(entry.number)
         old_sector_list.append(sector_time)
         sector_dict[entry.number] = old_sector_list
@@ -89,8 +89,8 @@ class SheetEngine(RaceEngine):
           continue
       sector_list = sector_dict.get(entry.number)
       lap_time = sum(sector_list)
-      print("#" + entry.number)
-      print(sector_list)
+      #print("#" + entry.number)
+      #print(sector_list)
       self.recordLap(entry, Lap(entry, lap_time, sector_list))
     
         

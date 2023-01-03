@@ -66,13 +66,13 @@ class RaceEngine():
       if lap.time < self.fastest_lap.get(entry.number).time:
         self.fastest_lap[entry.number] = lap
         self.addLogEntry(entry.drivers[entry.current_driver].name + " set a new personal best of " + utils.secToTimeStr(lap.time), type=session.LogEventType.personalBest)
-        self.DEBUG_print_lap(lap)
+        #self.DEBUG_print_lap(lap)
       else:
         self.addLogEntry(entry.drivers[entry.current_driver].name + " set a laptime of " + utils.secToTimeStr(lap.time), session.LogDetailLevel.medium)
     except:
       self.fastest_lap[entry.number] = lap
       self.addLogEntry(entry.drivers[entry.current_driver].name + " set a first lap of " + utils.secToTimeStr(lap.time))
-      self.DEBUG_print_lap(lap)
+      #self.DEBUG_print_lap(lap)
       
 
   def swapPosition(self, entry_1 : race_entry.RaceEntry, entry_2 : race_entry.RaceEntry):

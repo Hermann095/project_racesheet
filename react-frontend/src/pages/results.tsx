@@ -9,7 +9,9 @@ import EventLog from "../components/EventLog/EventLog";
 import { Button, FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
 
 
-export default function ResultsPage() {
+export default function ResultsPage(props: any) {
+
+    //const socket = props.socketInstance;
 
     const [fetchedData, setFetchedData] = useState<any>(null);
     const [resultData, setResultData] = useState<DriverResults>({drivers: []});
@@ -26,24 +28,12 @@ export default function ResultsPage() {
       });
     }, []);
 
-    /*useEffect(() => {
-      fillDriverArray()
-    }, [fetchedData])
-
-    function fillDriverArray() {
-      let results: DriverResults = {drivers: []};
-      fetchedData?.map((driver: any) => {
-        results.drivers.push({name: driver.name, nationality: driver.nationality, team: "", time: "", gap: ""});
-      })
-      console.log(results);
-      setResultData(results);
-    }*/
-
     function runQualifying() {
       fetch("http://localhost:5000/qualifying").then(res => res.json()).then(data => {
         setFetchedData(data);
         fillDriverArray(data);
       });
+      props.onRunQualifying({greeting: "hello", data: "some data from qualifying front end", printResults: false});
     }
 
     function fillDriverArray(data: any) {

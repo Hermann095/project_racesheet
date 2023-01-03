@@ -1,12 +1,15 @@
 import os
-from flask import Flask, send_from_directory, jsonify
+from flask import Flask, request, send_from_directory
+from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from simulation.sim import runTestQualifying
-from pathlib import Path
+import json
 
 
 app = Flask(__name__)
-CORS(app)
+app.config['SECRET_KEY'] = 'secret!'
+CORS(app, resources={r"/*":{"origins":"*"}})
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 mode = "dev"
 
@@ -46,7 +49,7 @@ def get_drivers():
 
 @app.route("/qualifying")
 def run_qualifying():
-    result = runTestQualifying()
+    result = runTestQualifying(False)
     return result
 
 @app.route("/carset")
@@ -57,5 +60,27 @@ def get_carset_path():
     return {"name": "test123"}
 
 
+@socketio.on("connect")
+def connected():
+    print(request.sid)
+    print("client connected")
+    emit("connect",{"data":f"id: {request.sid} is connected"})
+
+@socketio.on("disconnect")
+def disconnected():
+    print("client disconnected")
+    emit("disconnect",f"user {request.sid} disconnected",broadcast=True)
+
+@socketio.on("run_qualifying")
+def run_ws_qualifying(message):
+    print("recieved run_qualifying")
+    print(message)
+    printResults = json.loads(message)
+    result = runTestQualifying(printResults["printResults"])
+    emit("update_qualifying_results", result)
+
+
+
+
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    socketio.run(app, debug=True)

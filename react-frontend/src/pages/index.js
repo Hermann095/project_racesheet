@@ -1,7 +1,7 @@
 import React from "react";
 import Container from '@mui/material/Container';
 
-export default function HomePage() {
+export default function HomePage(props) {
 
 
     return (
