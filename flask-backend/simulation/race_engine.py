@@ -19,6 +19,7 @@ class RaceEngine():
     self.retired = []
     self.log = []
     self.fastest_lap = dict()
+    self.personal_best = dict()
 
   def setTrack(self, track :track.Track):
     self.track_ = track
@@ -36,6 +37,7 @@ class RaceEngine():
     self.retired = []
     self.log = []
     self.fastest_lap = dict()
+    self.personal_best = dict()
 
   def initLapDict(self):
     lap_dict = dict()
@@ -60,6 +62,27 @@ class RaceEngine():
 
   def recordLap(self, entry :race_entry.RaceEntry, lap :session.Lap):
     
+    try:
+      for index, sector in enumerate(self.personal_best.get(entry.number).sector_times):
+        print("in record lap sector")
+        #
+        # TODO: FIX BUG that throws exception
+        #
+        if sector[index].time < lap.sector_times[index].time:
+          print("in record lap sector if")
+          lap.sector_times[index].time = sector[index].time
+          lap.sector_times[index].state = session.SectorTimeState.green
+        else:
+          print("in record lap sector else")
+          lap.sector_times[index].state = session.SectorTimeState.yellow
+
+      self.personal_best.get(entry.number).time = sum(x.time for x in self.personal_best.get(entry.number).sector_times)
+    except:
+      print("in record lap exception")
+      for index, sector in enumerate(lap.sector_times):
+        sector.state = session.SectorTimeState.green
+      self.personal_best[entry.number] = lap
+
     self.lap_dict_[entry.number].append(lap)
 
     try:

@@ -38,6 +38,15 @@ class LogEventType(enum.Enum):
   def __getstate__(self):
     return self._name_
 
+class SectorTimeState(enum.Enum):
+  yellow = enum.auto()
+  green = enum.auto()
+  purple = enum.auto()
+  white = enum.auto()
+
+  def __getstate__(self):
+    return self._name_
+
 class SessionOptions():
   def __init__(self, skill_range = 1000, min_weight = 505, drag_multiplier = 1, low_speed_mult = 0.25, high_speed_mult = 0.25, acceleration_mult = 0.25, top_speed_mult = 0.25, weight_factor = 0.3, tyre_factor = 0.5, driver_mult = 2, random_range = 200) -> None:
     self.skill_range_ = skill_range
@@ -52,13 +61,23 @@ class SessionOptions():
     self.driver_mult_ = driver_mult
     self.random_range_ = random_range
 
+@dataclass
+class SectorTime():
+  time: float
+  state: SectorTimeState
+
+  def __getstate__(self):
+    return {
+      "time": utils.secToTimeStr(self.time),
+      "state": self.state
+    }
 
 @dataclass(order=True)
 class Lap():
   sort_index: float = field(init=False)
   entry :RaceEntry
   time :float
-  sector_times :list[float] = field(default_factory=list)
+  sector_times :list[SectorTime] = field(default_factory=list)
 
   def __post_init__(self):
     self.sort_index = self.time
@@ -66,7 +85,7 @@ class Lap():
   def __getstate__(self):
     return {
       "time": utils.secToTimeStr(self.time),
-      "sector_times": list(map(utils.secToTimeStr, self.sector_times))
+      "sector_times": self.sector_times
     }
 
 @dataclass
@@ -76,7 +95,7 @@ class LogEntry():
   type: LogEventType
 
 class SessionResult():
-  def __init__(self, session :SessionType, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict(), position_chart = [], log :list[LogEntry] = []) -> None:
+  def __init__(self, session :SessionType, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict(), personal_best: dict(), position_chart = [], log :list[LogEntry] = []) -> None:
     self.session_ = session
     self.entries_ = entries
     self.time_ = time
@@ -85,7 +104,7 @@ class SessionResult():
     self.fastest_lap_ = fastest_lap
     self.position_chart_ = position_chart
     self.log_ = log
-    self.personal_best_ = {}
+    self.personal_best_ = personal_best
     self.sortResults()
     self.leader_time_ = self.time_[0]
     self.best_sectors = self.setBestSectors()
@@ -104,7 +123,7 @@ class SessionResult():
     for index,entry in enumerate(self.entries_):
       driver_name = entry.drivers[entry.current_driver].name
       gap = self.time_[index] - self.leader_time_
-      print(str(index+1) + ": " + driver_name + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[0]) + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[1]) + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[2]) + "\t| " + utils.secToTimeStr(self.time_[index]) + "\t| + " + utils.secToTimeStr(gap))
+      print(str(index+1) + ": " + driver_name + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[0].time) + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[1].time) + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[2].time) + "\t| " + utils.secToTimeStr(self.time_[index]) + "\t| + " + utils.secToTimeStr(gap))
 
   def sortResults(self):
     zipped_lists = zip(self.time_, self.entries_)
@@ -118,22 +137,23 @@ class SessionResult():
   def setBestSectors(self) -> Lap:
     sector_list = []
     for index in range(len(self.fastest_lap_.get(self.entries_[0].number).sector_times)):
-      sector_list.append(utils.FLOAT_MAX)
+      sector_list.append(SectorTime(utils.FLOAT_MAX, SectorTimeState.yellow))
 
     best_lap = Lap(self.entries_[0], 0, sector_list.copy())
 
     for entry in self.entries_:
-      self.personal_best_[entry.number] = Lap(entry, utils.FLOAT_MAX, sector_list.copy())
+      #self.personal_best_[entry.number] = Lap(entry, utils.FLOAT_MAX, sector_list.copy())
       for lap in self.lap_times_.get(entry.number):
-        if lap.time < self.personal_best_[entry.number].time:
-          self.personal_best_[entry.number].time = lap.time
+        #if lap.time < self.personal_best_[entry.number].time:
+          #self.personal_best_[entry.number].time = lap.time
         for sector_index, time in enumerate(best_lap.sector_times):
-          if lap.sector_times[sector_index] < self.personal_best_[entry.number].sector_times[sector_index]:
-            self.personal_best_[entry.number].sector_times[sector_index] = lap.sector_times[sector_index]
-          if lap.sector_times[sector_index] < best_lap.sector_times[sector_index]:
-            best_lap.sector_times[sector_index] = lap.sector_times[sector_index]
+          #if lap.sector_times[sector_index].time < self.personal_best_[entry.number].sector_times[sector_index].time:
+            #self.personal_best_[entry.number].sector_times[sector_index].time = lap.sector_times[sector_index].time
+          if lap.sector_times[sector_index].time < best_lap.sector_times[sector_index].time:
+            best_lap.sector_times[sector_index].time = lap.sector_times[sector_index].time
           
-    best_lap.time = sum(best_lap.sector_times)
+    #best_lap.time = sum(best_lap.sector_times)
+    best_lap.time = sum(x.time for x in best_lap.sector_times)
 
     return best_lap
 

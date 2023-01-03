@@ -1,6 +1,6 @@
 from random import randint
 from .race_engine import RaceEngine
-from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType
+from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime, SectorTimeState
 from .track import MicroSector, Track
 from .race_entry import RaceEntry
 import simulation.utils as utils
@@ -95,14 +95,14 @@ class SheetEngine(RaceEngine):
         sector_time = sum(micro_sector_dict.get(entry.number))
         #print("#" + entry.number + " " + utils.secToTimeStr(sector_time))
         old_sector_list = sector_dict.get(entry.number)
-        old_sector_list.append(sector_time)
+        old_sector_list.append(SectorTime(sector_time, SectorTimeState.yellow))
         sector_dict[entry.number] = old_sector_list
 
     for entry in self.entry_list_:
       if self.isRetired(entry.number):
           continue
       sector_list = sector_dict.get(entry.number)
-      lap_time = sum(sector_list)
+      lap_time = sum(x.time for x in sector_list)
       #print("#" + entry.number)
       #print(sector_list)
       self.recordLap(entry, Lap(entry, lap_time, sector_list))
@@ -206,7 +206,7 @@ class SheetEngine(RaceEngine):
     for entry in self.entry_list_:
       overall_list.append(self.overall_time.get(entry.number))
 
-    results = SessionResult(session_type, self.entry_list_, overall_list, [], self.lap_dict_, self.fastest_lap, [], self.log)
+    results = SessionResult(session_type, self.entry_list_, overall_list, [], self.lap_dict_, self.fastest_lap, self.personal_best, [], self.log)
     return results
 
   def record_fastest_lap(self):

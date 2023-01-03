@@ -49,7 +49,7 @@ def get_drivers():
 
 @app.route("/qualifying")
 def run_qualifying():
-    result = runTestQualifying(False)
+    result = runTestQualifying(False, socketio)
     return result
 
 @app.route("/carset")
