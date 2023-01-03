@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import { DriverResults } from '../types/types';
 import ResultsTable from "../components/ResultsTable/ResultsTable";
 import EventLog from "../components/EventLog/EventLog";
-import { Button, FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
+import { Button, FormControlLabel, FormGroup, Grid, Stack, Switch } from "@mui/material";
 
 
 
@@ -68,6 +68,10 @@ export default function ResultsPage(props: any) {
       socketInstance?.emit("run_qualifying", {printResults: false});
     }
 
+    function pauseQualifying() {
+      socketInstance?.emit("pause_qualifying", {printResults: false});
+    }
+
     function fillDriverArray(data: any) {
       let results: DriverResults = {drivers: []};
       results.drivers = data?.entries.map((entry: any, index: any) => {
@@ -117,7 +121,10 @@ export default function ResultsPage(props: any) {
                   <FormGroup>
                     <FormControlLabel control={<Switch defaultChecked={showSectorBars} onChange={handleSectorBarChange}/>} label="Sector Bars" />
                   </FormGroup>
-                  <Button variant="contained" onClick={runQualifying}>Run Qualifying</Button>
+                  <Stack>
+                    <Button variant="contained" onClick={runQualifying}>Start Qualifying</Button>
+                    <Button variant="contained" onClick={pauseQualifying}>Pause Qualifying</Button>
+                  </Stack>
               </Grid>
             </Grid>
             <ResultsTable carsetName={carsetName} Results={resultData} showSectorBars={showSectorBars} showEntryIcons={showEntryIcons} showTheoreticalBest={showTheoreticalBest}></ResultsTable>

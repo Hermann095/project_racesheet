@@ -26,7 +26,7 @@ class RaceEngine():
   def setEntryList(self, entry_list :list[race_entry.RaceEntry]):
     self.entry_list_ = entry_list
 
-  def startSession(self, session :session.SessionType) -> session.SessionResult:
+  def startSession(self, session :session.SessionType, socket) -> session.SessionResult:
     pass
 
   def initSession(self):

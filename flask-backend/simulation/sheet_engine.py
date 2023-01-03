@@ -4,6 +4,9 @@ from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventTy
 from .track import MicroSector, Track
 from .race_entry import RaceEntry
 import simulation.utils as utils
+from flask_socketio import SocketIO, emit
+import time
+import jsonpickle
 
 
 FLOAT_MAX = utils.FLOAT_MAX
@@ -11,7 +14,8 @@ FLOAT_MAX = utils.FLOAT_MAX
 
 class SheetEngine(RaceEngine):
 
-  def startSession(self, session :SessionType) -> SessionResult:
+  def startSession(self, session :SessionType, socket: SocketIO) -> SessionResult:
+    self.socket = socket
     self.initSession()
     if session == SessionType.Practice:
       result = self.practice()
@@ -36,15 +40,23 @@ class SheetEngine(RaceEngine):
     self.calcLap(SessionType.Pre_Qualifying)
 
   def qualifying(self) -> SessionResult:
+
     self.hello_message(SessionType.Qualifying)
-    self.calcLap(SessionType.Qualifying)
-    self.calcLap(SessionType.Qualifying)
+    numQualiLaps = 3
+
+    for i in range(numQualiLaps):
+      self.calcLap(SessionType.Qualifying)
+      results = self.constructSessionResults(SessionType.Qualifying)
+      self.record_fastest_lap()
+      self.socket.emit("update_qualifying_results", jsonpickle.encode(results, unpicklable=False))
+      self.socket.sleep(2)
+
+    results = self.constructSessionResults(SessionType.Qualifying)
+    self.record_fastest_lap() 
     #for entry in self.entry_list_:
     #  self.DEBUG_print_lap(self.lap_list_[self.position_dict_.get(entry.number)][0])
     
-    self.record_fastest_lap()
-
-    return self.constructSessionResults(SessionType.Qualifying)
+    return results 
 
 
 

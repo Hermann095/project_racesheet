@@ -76,9 +76,13 @@ def run_ws_qualifying(json):
     print("recieved run_qualifying")
     print((str(json)))
     #printResults = JSON.loads(json)
-    result = runTestQualifying(json["printResults"])
-    emit("update_qualifying_results", result)
+    result = runTestQualifying(json["printResults"], socketio)
+    #emit("update_qualifying_results", result)
 
+@socketio.on("pause_qualifying")
+def pause_qualifying(json):
+    print("recieved pause_qualifying")
+    return
 
 
 
