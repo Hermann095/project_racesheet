@@ -42,7 +42,10 @@ export default function ResultsPage(props: any) {
   
       socket?.on("update_qualifying_results", (data: any) => {
         console.log("recived data from update_qualifying_results");
-        console.log(data);
+        let jsonData = JSON.parse(data)
+        console.log(jsonData);
+        setFetchedData(jsonData);
+        fillDriverArray(jsonData);
       })
   
       return function cleanup() {
@@ -58,13 +61,11 @@ export default function ResultsPage(props: any) {
     }, []);
 
     function runQualifying() {
-      fetch("http://localhost:5000/qualifying").then(res => res.json()).then(data => {
+      /*fetch("http://localhost:5000/qualifying").then(res => res.json()).then(data => {
         setFetchedData(data);
         fillDriverArray(data);
-      });
-      let message = {greeting: "hello", data: "some data from qualifying front end", printResults: false} 
-      //props.onRunQualifying(message);
-      socketInstance?.emit("run_qualifying", message);
+      });*/
+      socketInstance?.emit("run_qualifying", {printResults: false});
     }
 
     function fillDriverArray(data: any) {
