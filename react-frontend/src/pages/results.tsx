@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useEffect, useState } from "react";
+import io, { Socket } from "socket.io-client";
 
 import Container from '@mui/material/Container';
 
@@ -9,9 +10,10 @@ import EventLog from "../components/EventLog/EventLog";
 import { Button, FormControlLabel, FormGroup, Grid, Switch } from "@mui/material";
 
 
+
 export default function ResultsPage(props: any) {
 
-    //const socket = props.socketInstance;
+    const [socketInstance, setSocketInstance] = useState<Socket>();
 
     const [fetchedData, setFetchedData] = useState<any>(null);
     const [resultData, setResultData] = useState<DriverResults>({drivers: []});
@@ -21,6 +23,33 @@ export default function ResultsPage(props: any) {
     const [showSectorBars, setShowSectorBars] = useState(false);
     const [showEntryIcons, setShowEntryIcons] = useState(false);
     const [showTheoreticalBest, setShowTheoreticalBest] = useState(false);
+
+    useEffect(() => {
+  
+      const socket = io("localhost:5000/", {
+        transports: ["websocket"],
+      });
+
+      setSocketInstance(socket);
+
+      socket.on("connect", () => {
+        console.log("connected");
+      });
+  
+      socket.on("disconnect", () => {
+        console.log("disconnected");
+      });
+  
+      socket?.on("update_qualifying_results", (data: any) => {
+        console.log("recived data from update_qualifying_results");
+        console.log(data);
+      })
+  
+      return function cleanup() {
+        socket.offAny();
+        socket.disconnect();
+      }
+    }, []);
 
     useEffect(() => {
       fetch("http://localhost:5000/carset").then(res => res.json()).then(data => {
@@ -34,7 +63,8 @@ export default function ResultsPage(props: any) {
         fillDriverArray(data);
       });
       let message = {greeting: "hello", data: "some data from qualifying front end", printResults: false} 
-      props.onRunQualifying(message);
+      //props.onRunQualifying(message);
+      socketInstance?.emit("run_qualifying", message);
     }
 
     function fillDriverArray(data: any) {
@@ -66,6 +96,8 @@ export default function ResultsPage(props: any) {
     function handleTheoreticalBest(event: any, checked: boolean) {
       setShowTheoreticalBest(checked)
     }
+
+
 
     return (
         <>
