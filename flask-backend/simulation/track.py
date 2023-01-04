@@ -27,3 +27,13 @@ class Track():
   qualy_spread :int
   race_spread :int
   sectors :list[Sector] = field(default_factory=list)
+
+  def lap_time(self) -> float:
+    lap_total = 0
+    for sector in self.sectors:
+      if not sector.microsector_timing:
+        lap_total += sector.time
+      else:
+        for micro_sector in sector.micro_sectors:
+          lap_total += micro_sector.time
+    return lap_total

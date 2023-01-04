@@ -37,9 +37,10 @@ class RaceEngine():
     self.initLapDict()
     self.initPositionDict()
     self.initOverallTime()
+    self.initFastestLapDict()
     self.retired = []
     self.log = []
-    self.fastest_lap = dict()
+    #self.fastest_lap = dict()
     self.personal_best = dict()
 
   def initLapDict(self):
@@ -62,6 +63,14 @@ class RaceEngine():
       overall[entry.number] = 0.0
 
     self.overall_time = overall
+
+  def initFastestLapDict(self):
+    fastest_lap = dict()
+    for entry in self.entry_list_:
+      sector_list = [session.SectorTime()]*(len(self.track_.sectors))
+      fastest_lap[entry.number] = session.Lap(entry, utils.FLOAT_MAX, sector_list)
+
+    self.fastest_lap = fastest_lap
 
   def recordLap(self, entry :race_entry.RaceEntry, lap :session.Lap):
 

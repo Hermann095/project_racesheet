@@ -1,3 +1,4 @@
+import math
 from random import randint
 from .race_engine import RaceEngine
 from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime, SectorTimeState
@@ -44,9 +45,11 @@ class SheetEngine(RaceEngine):
   def qualifying(self) -> SessionResult:
 
     self.hello_message(SessionType.Qualifying)
-    numQualiLaps = 12
+    sessionLenght = 3600 #seconds
+    #numQualiLaps = 4
+    numPossibleLaps = math.ceil(sessionLenght / self.track_.lap_time())
 
-    for i in range(numQualiLaps):
+    for i in range(numPossibleLaps):
       while self.stateCallback() == utils.SimulationState.Paused:
         print("paused simulation...")
         self.socket.emit("paused_qualifying")
@@ -55,7 +58,7 @@ class SheetEngine(RaceEngine):
           self.socket.emit("cancelled_qualifying")
           return results
       
-      self.calcLap(SessionType.Qualifying)
+      self.calcLap(SessionType.Qualifying, i, numPossibleLaps)
       self.record_fastest_lap() 
       results = self.constructSessionResults(SessionType.Qualifying)
       #self.record_fastest_lap()
@@ -76,7 +79,7 @@ class SheetEngine(RaceEngine):
     self.hello_message(SessionType.Race)
     self.calcLap(SessionType.Race)
 
-  def calcLap(self, session :SessionType):
+  def calcLap(self, session :SessionType, current_tick: int, total_ticks: int):
     self.addLogEntry("calculate lap time...", LogDetailLevel.high)
 
     #print("new lap")
@@ -111,11 +114,18 @@ class SheetEngine(RaceEngine):
     for entry in self.entry_list_:
       if self.isRetired(entry.number):
           continue
-      sector_list = sector_dict.get(entry.number)
-      lap_time = sum(x.time for x in sector_list)
-      #print("#" + entry.number)
-      #print(sector_list)
-      self.recordLap(entry, Lap(entry, lap_time, sector_list))
+      laps_done = len(self.lap_dict_.get(entry.number))
+      set_lap = False
+      if laps_done < self.options_.allowed_quali_laps:
+        if (total_ticks - current_tick) <= (self.options_.allowed_quali_laps - laps_done):
+          set_lap = True
+        elif randint(0, 100) < 10:
+          set_lap = True
+
+      if set_lap:
+        sector_list = sector_dict.get(entry.number)
+        lap_time = sum(x.time for x in sector_list)
+        self.recordLap(entry, Lap(entry, lap_time, sector_list))
     
         
 
@@ -216,13 +226,19 @@ class SheetEngine(RaceEngine):
     for entry in self.entry_list_:
       overall_list.append(self.overall_time.get(entry.number))
 
-    results = SessionResult(session_type, self.entry_list_, overall_list, [], self.lap_dict_, self.fastest_lap, self.personal_best, [], self.log)
+    results = SessionResult(session_type, self.track_, self.entry_list_, overall_list, [], self.lap_dict_, self.fastest_lap, self.personal_best, [], self.log)
     return results
 
   def record_fastest_lap(self):
     for entry in self.entry_list_:
       try:
         fastest_time = FLOAT_MAX
+
+        if len(self.lap_dict_.get(entry.number)) == 0:
+          sector_list = [SectorTime()]*(self.track_.sectors)
+          print(sector_list)
+          self.fastest_lap[entry.number] = Lap(entry, FLOAT_MAX, sector_list)
+          continue
 
         for lap in self.lap_dict_.get(entry.number):
           if lap.time < fastest_time:
@@ -232,6 +248,7 @@ class SheetEngine(RaceEngine):
         self.overall_time[entry.number] = fastest_time
       except:
         self.overall_time[entry.number] = FLOAT_MAX
+        
 
 
   

@@ -9,8 +9,11 @@ class SimulationState(enum.Enum):
   Paused = enum.auto()
   Cancelled = enum.auto()
 
+def isNan(num) -> bool:
+    return num != num
+
 def secToTimeStr(race_time :float) -> str:
-    if race_time == FLOAT_MAX:
+    if race_time == FLOAT_MAX or isNan(race_time):
         return "No Time"
     elif race_time < FLOAT_MAX and race_time > FLOAT_MAX / 2:
         return "---"

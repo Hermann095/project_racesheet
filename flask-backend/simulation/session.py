@@ -5,6 +5,7 @@ import json
 import enum
 import simulation.utils as utils
 from .race_entry import RaceEntry
+from .track import Track
 
 class SessionType(enum.Enum):
   Practice = enum.auto()
@@ -48,7 +49,7 @@ class SectorTimeState(enum.Enum):
     return self._name_
 
 class SessionOptions():
-  def __init__(self, skill_range = 1000, min_weight = 505, drag_multiplier = 1, low_speed_mult = 0.25, high_speed_mult = 0.25, acceleration_mult = 0.25, top_speed_mult = 0.25, weight_factor = 0.3, tyre_factor = 0.5, driver_mult = 2, random_range = 200) -> None:
+  def __init__(self, skill_range = 1000, min_weight = 505, drag_multiplier = 1, low_speed_mult = 0.25, high_speed_mult = 0.25, acceleration_mult = 0.25, top_speed_mult = 0.25, weight_factor = 0.3, tyre_factor = 0.5, driver_mult = 2, random_range = 200, allowed_quali_laps = 4) -> None:
     self.skill_range_ = skill_range
     self.min_weight_ = min_weight
     self.drag_multiplier_ = drag_multiplier
@@ -60,10 +61,11 @@ class SessionOptions():
     self.tyre_factor_ = tyre_factor
     self.driver_mult_ = driver_mult
     self.random_range_ = random_range
+    self.allowed_quali_laps = allowed_quali_laps
 
 @dataclass
 class SectorTime():
-  time: float
+  time: float = field(default=utils.FLOAT_MAX)
   state: SectorTimeState = field(default=SectorTimeState.green)
 
   def __getstate__(self):
@@ -76,7 +78,7 @@ class SectorTime():
 class Lap():
   sort_index: float = field(init=False)
   entry :RaceEntry
-  time :float
+  time :float = field(default=utils.FLOAT_MAX)
   sector_times :list[SectorTime] = field(default_factory=list)
 
   def __post_init__(self):
@@ -95,8 +97,9 @@ class LogEntry():
   type: LogEventType
 
 class SessionResult():
-  def __init__(self, session :SessionType, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict[Lap], personal_best:dict[Lap], position_chart = [], log :list[LogEntry] = []) -> None:
+  def __init__(self, session :SessionType, track: Track, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict[Lap], personal_best:dict[Lap], position_chart = [], log :list[LogEntry] = []) -> None:
     self.session_ = session
+    self.track_ = track
     self.entries_ = entries
     self.time_ = time
     self.notes_ = notes
@@ -106,7 +109,7 @@ class SessionResult():
     self.log_ = log
     self.personal_best_ = personal_best
     self.sortResults()
-    self.leader_time_ = self.time_[0]
+    self.leader_time_ = self.time_[0] if len(self.time_) != 0 else 0
     self.best_sectors :dict[Lap] = self.setBestSectors()
     self.gap_ = self.setGap()
     
@@ -126,6 +129,10 @@ class SessionResult():
       print(str(index+1) + ": " + driver_name + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[0].time) + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[1].time) + "\t| " + utils.secToTimeStr(self.fastest_lap_.get(entry.number).sector_times[2].time) + "\t| " + utils.secToTimeStr(self.time_[index]) + "\t| + " + utils.secToTimeStr(gap))
 
   def sortResults(self):
+
+    if len(self.time_) == 0:
+      return
+
     zipped_lists = zip(self.time_, self.entries_)
     sorted_pairs = sorted(zipped_lists)
 
@@ -136,7 +143,17 @@ class SessionResult():
 
   def setBestSectors(self) -> Lap:
     sector_list = []
-    for index in range(len(self.fastest_lap_.get(self.entries_[0].number).sector_times)):
+    #for index in range(len(self.fastest_lap_.get(self.entries_[0].number).sector_times)):
+    #  sector_list.append(SectorTime(utils.FLOAT_MAX))
+
+    """
+    for entry in self.entries_:
+      if (len(self.lap_times_) > 0):
+        for index in range(len(self.fastest_lap_.get(entry.number).sector_times)):
+          sector_list.append(SectorTime(utils.FLOAT_MAX))
+    """
+
+    for i in range(len(self.track_.sectors)):
       sector_list.append(SectorTime(utils.FLOAT_MAX))
 
     best_lap = Lap(self.entries_[0], 0, sector_list.copy())

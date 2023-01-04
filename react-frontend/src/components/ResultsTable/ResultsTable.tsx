@@ -73,20 +73,21 @@ export default function ResultsTable(props: ResultsTableProbs) {
                 (<TableCell>
                   <div style={{"--num-sectors": numSectors.toString()} as React.CSSProperties} className="sector-cell-container">
                   {row.sectors.map((sector_time, index) => (
+                    sector_time.time !== "No Time" ?
                     <SectorCell 
                       cellClass={sector_time.time === Results.bestLap?.sector_times[index].time ? "fastest-time-cell" : (sector_time.state === "green" ? "personal-best-cell" : "slower-time-cell")}>
-                      </SectorCell>))}
+                      </SectorCell> : null))}
                   </div>
                 </TableCell>)
               : (row.sectors.map((sector_time, index) => (
                 <TableCell align='center'>
                   <span className={sector_time.time === Results.bestLap?.sector_times[index].time ? "fastest-time" : (sector_time.state === "green" ? "personal-best" : "slower-time")}>
-                      {sector_time.time}
+                      {sector_time.time === "No Time" ? "" : sector_time.time}
                       </span>
                 </TableCell>)
               ))}
               <TableCell align="center">{row.time}</TableCell>
-              <TableCell align="center">+ {row.gap}</TableCell>
+              <TableCell align="center">{row.gap === "No Time" ? "" : ("+ " + row.gap)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
