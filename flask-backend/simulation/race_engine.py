@@ -65,7 +65,7 @@ class RaceEngine():
 
   def recordLap(self, entry :race_entry.RaceEntry, lap :session.Lap):
     #
-    # TODO: fix bug where personal best times are safed in first posted lap time
+    # TODO: fix bug where personal best times are saved in first posted lap time
     #
     try:
       for index, sector in enumerate(self.personal_best.get(entry.number).sector_times):
@@ -76,7 +76,10 @@ class RaceEngine():
 
       #self.personal_best.get(entry.number).time = sum(x.time for x in self.personal_best.get(entry.number).sector_times)
     except:
-      self.personal_best[entry.number] = lap
+      first_lap = session.Lap(lap.entry, lap.time, list())
+      for index, sector in enumerate(lap.sector_times):
+        first_lap.sector_times.append(sector)
+      self.personal_best[entry.number] = first_lap
 
     self.lap_dict_[entry.number].append(lap)
 
