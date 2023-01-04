@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import copy, deepcopy
 from time import time
 
 import simulation.track as track
@@ -38,10 +38,11 @@ class RaceEngine():
     self.initPositionDict()
     self.initOverallTime()
     self.initFastestLapDict()
+    self.initPersonalBestDict()
     self.retired = []
     self.log = []
     #self.fastest_lap = dict()
-    self.personal_best = dict()
+    #self.personal_best = dict()
 
   def initLapDict(self):
     lap_dict = dict()
@@ -72,36 +73,33 @@ class RaceEngine():
 
     self.fastest_lap = fastest_lap
 
+  def initPersonalBestDict(self):
+    personal_best = dict()
+    for entry in self.entry_list_:
+      sector_list = [session.SectorTime()]*(len(self.track_.sectors))
+      personal_best[entry.number] = session.Lap(entry, utils.FLOAT_MAX, sector_list)
+
+    self.personal_best = personal_best
+
   def recordLap(self, entry :race_entry.RaceEntry, lap :session.Lap):
-
-    try:
-      for index, sector in enumerate(self.personal_best.get(entry.number).sector_times):
-        if lap.sector_times[index].time < sector.time:
-          self.personal_best.get(entry.number).sector_times[index].time = lap.sector_times[index].time
-        else:
-          lap.sector_times[index].state = session.SectorTimeState.yellow
-
-      #self.personal_best.get(entry.number).time = sum(x.time for x in self.personal_best.get(entry.number).sector_times)
-    except:
-      first_lap = session.Lap(lap.entry, lap.time, list())
-      for index, sector in enumerate(lap.sector_times):
-        first_lap.sector_times.append(sector)
-      self.personal_best[entry.number] = first_lap
 
     self.lap_dict_[entry.number].append(lap)
 
-    try:
-      if lap.time < self.fastest_lap.get(entry.number).time:
-        self.fastest_lap[entry.number] = lap
-        self.addLogEntry(entry.drivers[entry.current_driver].name + " set a new personal best of " + utils.secToTimeStr(lap.time), type=session.LogEventType.personalBest)
-        #self.DEBUG_print_lap(lap)
-      else:
-        self.addLogEntry(entry.drivers[entry.current_driver].name + " set a laptime of " + utils.secToTimeStr(lap.time), session.LogDetailLevel.medium)
-    except:
+    if len(self.lap_dict_.get(entry.number)) == 1:
       self.fastest_lap[entry.number] = lap
       self.addLogEntry(entry.drivers[entry.current_driver].name + " set a first lap of " + utils.secToTimeStr(lap.time))
-      #self.DEBUG_print_lap(lap)
-      
+    elif lap.time < self.fastest_lap.get(entry.number).time: 
+      self.fastest_lap[entry.number] = lap
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " set a new personal best of " + utils.secToTimeStr(lap.time), type=session.LogEventType.personalBest)
+    else:
+      self.addLogEntry(entry.drivers[entry.current_driver].name + " set a laptime of " + utils.secToTimeStr(lap.time), session.LogDetailLevel.medium)
+
+    for index, sector in enumerate(self.personal_best.get(entry.number).sector_times):
+      if lap.sector_times[index].time < sector.time:
+        self.personal_best.get(entry.number).sector_times[index] = lap.sector_times[index]
+      else:
+        lap.sector_times[index].state = session.SectorTimeState.yellow
+
 
   def swapPosition(self, entry_1 : race_entry.RaceEntry, entry_2 : race_entry.RaceEntry):
     position_1 = self.position_dict_.get(entry_1.number)

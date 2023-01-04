@@ -38,6 +38,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
             <TableCell>Name</TableCell>
             <TableCell align="center">Nationality</TableCell>
             <TableCell align="center">Team</TableCell>
+            <TableCell align="center">Laps</TableCell>
             {showSectorBars ? 
               <TableCell align='center'>Sectors</TableCell>
             : Results.drivers[0]?.sectors.map((sector, index) => (
@@ -69,6 +70,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
               </TableCell>
               <TableCell align="center"><img className="flag-icon" src={process.env.PUBLIC_URL + "/flags/" + row?.nationality} alt={"flag_" + row?.nationality}></img></TableCell>
               <TableCell align="center">{row.team}</TableCell>
+              <TableCell align="center">{row.laps}</TableCell>
               {showSectorBars ? 
                 (<TableCell>
                   <div style={{"--num-sectors": numSectors.toString()} as React.CSSProperties} className="sector-cell-container">
@@ -98,6 +100,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
             {showEntryIcons ? <TableCell></TableCell> : <TableCell align="center"></TableCell>}
             <TableCell></TableCell>
             <TableCell>Theoretical best</TableCell>
+            <TableCell align="center"></TableCell>
             <TableCell align="center"></TableCell>
             <TableCell align="center"></TableCell>
             {showSectorBars ? 

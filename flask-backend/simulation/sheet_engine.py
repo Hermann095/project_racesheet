@@ -84,7 +84,7 @@ class SheetEngine(RaceEngine):
 
     #print("new lap")
 
-    sector_dict = dict()
+    sector_dict: dict[str, SectorTime] = {}
     micro_sector_dict = dict()
 
     for entry in self.entry_list_:
@@ -234,12 +234,13 @@ class SheetEngine(RaceEngine):
       try:
         fastest_time = FLOAT_MAX
 
+        """
         if len(self.lap_dict_.get(entry.number)) == 0:
           sector_list = [SectorTime()]*(self.track_.sectors)
           print(sector_list)
           self.fastest_lap[entry.number] = Lap(entry, FLOAT_MAX, sector_list)
           continue
-
+        """
         for lap in self.lap_dict_.get(entry.number):
           if lap.time < fastest_time:
             fastest_time = lap.time
