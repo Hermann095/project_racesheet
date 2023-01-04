@@ -7,6 +7,7 @@ import simulation.utils as utils
 from flask_socketio import SocketIO, emit
 import time
 import jsonpickle
+from typing import Callable
 
 
 FLOAT_MAX = utils.FLOAT_MAX
@@ -14,8 +15,9 @@ FLOAT_MAX = utils.FLOAT_MAX
 
 class SheetEngine(RaceEngine):
 
-  def startSession(self, session :SessionType, socket: SocketIO) -> SessionResult:
+  def startSession(self, session :SessionType, socket: SocketIO, stateCallback: Callable) -> SessionResult:
     self.socket = socket
+    self.stateCallback : Callable = stateCallback
     self.initSession()
     if session == SessionType.Practice:
       result = self.practice()
@@ -45,6 +47,13 @@ class SheetEngine(RaceEngine):
     numQualiLaps = 3
 
     for i in range(numQualiLaps):
+      print(self.stateCallback())
+      while self.stateCallback() == utils.SimulationState.Paused:
+        print("paused simulation...")
+        self.socket.sleep(2)
+        if self.stateCallback == utils.SimulationState.Cancelled:
+          return results
+      
       self.calcLap(SessionType.Qualifying)
       self.record_fastest_lap() 
       results = self.constructSessionResults(SessionType.Qualifying)

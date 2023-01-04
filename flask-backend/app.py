@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
-from simulation.sim import runTestQualifying
+from simulation.sim import startTestQualifying
 import json as JSON
 
 
@@ -49,7 +49,7 @@ def get_drivers():
 
 @app.route("/qualifying")
 def run_qualifying():
-    result = runTestQualifying(False, socketio)
+    result = startTestQualifying(False, socketio)
     return result
 
 @app.route("/carset")
@@ -76,13 +76,9 @@ def run_ws_qualifying(json):
     print("recieved run_qualifying")
     print((str(json)))
     #printResults = JSON.loads(json)
-    result = runTestQualifying(json["printResults"], socketio)
+    result = startTestQualifying(json["printResults"], socketio)
     #emit("update_qualifying_results", result)
 
-@socketio.on("pause_qualifying")
-def pause_qualifying(json):
-    print("recieved pause_qualifying")
-    return
 
 
 

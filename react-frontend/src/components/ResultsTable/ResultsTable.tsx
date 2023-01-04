@@ -64,14 +64,14 @@ export default function ResultsTable(props: ResultsTableProbs) {
                   <div style={{"--num-sectors": numSectors.toString()} as React.CSSProperties} className="sector-cell-container">
                   {row.sectors.map((sector_time, index) => (
                     <SectorCell 
-                      cellClass={(sector_time === Results.bestLap?.sector_times[index] ? "fastest-time-cell" : (sector_time === row.fastestLap?.sector_times[index] ? "personal-best-cell" : "slower-time-cell"))}>
+                      cellClass={sector_time.state === "purple" ? "fastest-time-cell" : (sector_time.state === "green" ? "personal-best-cell" : "slower-time-cell")}>
                       </SectorCell>))}
                   </div>
                 </TableCell>)
               : (row.sectors.map((sector_time, index) => (
                 <TableCell align='center'>
-                  <span className={sector_time === Results.bestLap?.sector_times[index] ? "fastest-time" : (sector_time === row.fastestLap?.sector_times[index] ? "personal-best" : "slower-time")}>
-                      {sector_time}
+                  <span className={sector_time.state === "purple" ? "fastest-time" : (sector_time.state === "green" ? "personal-best" : "slower-time")}>
+                      {sector_time.time}
                       </span>
                 </TableCell>)
               ))}
@@ -90,7 +90,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
             {showSectorBars ? 
               <TableCell align='center'></TableCell>
             : Results.bestLap?.sector_times.map((sector, index) => (
-                <TableCell align='center'>{sector}</TableCell>
+                <TableCell align='center'>{sector.time}</TableCell>
             ))}
             <TableCell align="center">{Results.bestLap?.time}</TableCell>
             <TableCell align="center"></TableCell>

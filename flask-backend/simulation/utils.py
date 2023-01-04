@@ -1,8 +1,13 @@
 import math
-
+import enum
 import sys
 FLOAT_MAX = sys.float_info.max
 
+class SimulationState(enum.Enum):
+  Running = enum.auto()
+  Finished = enum.auto()
+  Paused = enum.auto()
+  Cancelled = enum.auto()
 
 def secToTimeStr(race_time :float) -> str:
     if race_time == FLOAT_MAX:

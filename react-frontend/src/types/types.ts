@@ -1,7 +1,12 @@
 
 export interface BestLap {
     time: string,
-    sector_times: Array<string>
+    sector_times: Array<Sector>
+}
+
+export interface Sector {
+    time: string,
+    state: string
 }
 
 export interface DriverResults {
@@ -10,7 +15,7 @@ export interface DriverResults {
         nationality: string,
         number: string,
         team: string,
-        sectors: Array<string>,
+        sectors: Array<Sector>,
         time: string,
         gap: string,
         fastestLap?: BestLap

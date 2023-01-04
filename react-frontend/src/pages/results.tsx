@@ -24,6 +24,8 @@ export default function ResultsPage(props: any) {
     const [showEntryIcons, setShowEntryIcons] = useState(false);
     const [showTheoreticalBest, setShowTheoreticalBest] = useState(false);
 
+    const [isPaused, setIsPaused] = useState(false);
+
     useEffect(() => {
   
       const socket = io("localhost:5000/", {
@@ -65,11 +67,17 @@ export default function ResultsPage(props: any) {
         setFetchedData(data);
         fillDriverArray(data);
       });*/
-      socketInstance?.emit("run_qualifying", {printResults: false});
+      setIsPaused(false)
+      if (isPaused) {
+        socketInstance?.emit("resume_qualifying");
+      } else {
+        socketInstance?.emit("run_qualifying", {printResults: false});
+      }
     }
 
     function pauseQualifying() {
-      socketInstance?.emit("pause_qualifying", {printResults: false});
+      setIsPaused(true);
+      socketInstance?.emit("pause_qualifying");
     }
 
     function fillDriverArray(data: any) {

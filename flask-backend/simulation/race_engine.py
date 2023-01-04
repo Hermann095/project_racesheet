@@ -5,6 +5,8 @@ import simulation.race_entry as race_entry
 import simulation.session as session
 import simulation.utils as utils
 
+from flask_socketio import SocketIO
+from typing import Callable
 
 
 
@@ -27,7 +29,7 @@ class RaceEngine():
   def setEntryList(self, entry_list :list[race_entry.RaceEntry]):
     self.entry_list_ = entry_list
 
-  def startSession(self, session :session.SessionType, socket) -> session.SessionResult:
+  def startSession(self, session :session.SessionType, socket: SocketIO, stateCallback: Callable) -> session.SessionResult:
     pass
 
   def initSession(self):
@@ -62,6 +64,9 @@ class RaceEngine():
 
   def recordLap(self, entry :race_entry.RaceEntry, lap :session.Lap):
     
+    #
+    # TODO: Fix bug where sectory are flagged wrong
+    #
     try:
       for index, sector in enumerate(self.personal_best.get(entry.number).sector_times):
         if sector.time < lap.sector_times[index].time:
@@ -72,7 +77,6 @@ class RaceEngine():
 
       self.personal_best.get(entry.number).time = sum(x.time for x in self.personal_best.get(entry.number).sector_times)
     except:
-      print("in record lap exception")
       for index, sector in enumerate(lap.sector_times):
         sector.state = session.SectorTimeState.green
       self.personal_best[entry.number] = lap
