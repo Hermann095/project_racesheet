@@ -1,3 +1,4 @@
+from copy import deepcopy
 from time import time
 
 import simulation.track as track
@@ -38,8 +39,8 @@ class RaceEngine():
     self.initOverallTime()
     self.retired = []
     self.log = []
-    self.fastest_lap = {}
-    self.personal_best = {}
+    self.fastest_lap = dict()
+    self.personal_best = dict()
 
   def initLapDict(self):
     lap_dict = dict()
@@ -63,22 +64,16 @@ class RaceEngine():
     self.overall_time = overall
 
   def recordLap(self, entry :race_entry.RaceEntry, lap :session.Lap):
-    
-    #
-    # TODO: Fix bug where sectory are flagged wrong
-    #
+        
     try:
       for index, sector in enumerate(self.personal_best.get(entry.number).sector_times):
-        if sector.time < lap.sector_times[index].time:
-          lap.sector_times[index].time = sector.time
-          lap.sector_times[index].state = session.SectorTimeState.green
+        if lap.sector_times[index].time < sector.time:
+          self.personal_best.get(entry.number).sector_times[index].time = lap.sector_times[index].time
         else:
           lap.sector_times[index].state = session.SectorTimeState.yellow
 
-      self.personal_best.get(entry.number).time = sum(x.time for x in self.personal_best.get(entry.number).sector_times)
+      #self.personal_best.get(entry.number).time = sum(x.time for x in self.personal_best.get(entry.number).sector_times)
     except:
-      for index, sector in enumerate(lap.sector_times):
-        sector.state = session.SectorTimeState.green
       self.personal_best[entry.number] = lap
 
     self.lap_dict_[entry.number].append(lap)

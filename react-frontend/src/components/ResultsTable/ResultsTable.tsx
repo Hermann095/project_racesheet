@@ -64,13 +64,13 @@ export default function ResultsTable(props: ResultsTableProbs) {
                   <div style={{"--num-sectors": numSectors.toString()} as React.CSSProperties} className="sector-cell-container">
                   {row.sectors.map((sector_time, index) => (
                     <SectorCell 
-                      cellClass={sector_time.state === "purple" ? "fastest-time-cell" : (sector_time.state === "green" ? "personal-best-cell" : "slower-time-cell")}>
+                      cellClass={sector_time.time === Results.bestLap?.sector_times[index].time ? "fastest-time-cell" : (sector_time.state === "green" ? "personal-best-cell" : "slower-time-cell")}>
                       </SectorCell>))}
                   </div>
                 </TableCell>)
               : (row.sectors.map((sector_time, index) => (
                 <TableCell align='center'>
-                  <span className={sector_time.state === "purple" ? "fastest-time" : (sector_time.state === "green" ? "personal-best" : "slower-time")}>
+                  <span className={sector_time.time === Results.bestLap?.sector_times[index].time ? "fastest-time" : (sector_time.state === "green" ? "personal-best" : "slower-time")}>
                       {sector_time.time}
                       </span>
                 </TableCell>)

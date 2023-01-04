@@ -44,7 +44,7 @@ class SheetEngine(RaceEngine):
   def qualifying(self) -> SessionResult:
 
     self.hello_message(SessionType.Qualifying)
-    numQualiLaps = 3
+    numQualiLaps = 12
 
     for i in range(numQualiLaps):
       while self.stateCallback() == utils.SimulationState.Paused:
@@ -105,7 +105,7 @@ class SheetEngine(RaceEngine):
         sector_time = sum(micro_sector_dict.get(entry.number))
         #print("#" + entry.number + " " + utils.secToTimeStr(sector_time))
         old_sector_list = sector_dict.get(entry.number)
-        old_sector_list.append(SectorTime(sector_time, SectorTimeState.yellow))
+        old_sector_list.append(SectorTime(sector_time))
         sector_dict[entry.number] = old_sector_list
 
     for entry in self.entry_list_:

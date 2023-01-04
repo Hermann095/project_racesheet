@@ -64,7 +64,7 @@ class SessionOptions():
 @dataclass
 class SectorTime():
   time: float
-  state: SectorTimeState
+  state: SectorTimeState = field(default=SectorTimeState.green)
 
   def __getstate__(self):
     return {
@@ -137,7 +137,7 @@ class SessionResult():
   def setBestSectors(self) -> Lap:
     sector_list = []
     for index in range(len(self.fastest_lap_.get(self.entries_[0].number).sector_times)):
-      sector_list.append(SectorTime(utils.FLOAT_MAX, SectorTimeState.yellow))
+      sector_list.append(SectorTime(utils.FLOAT_MAX))
 
     best_lap = Lap(self.entries_[0], 0, sector_list.copy())
 
