@@ -60,13 +60,13 @@ class SheetEngine(RaceEngine):
       
       self.calcLap(SessionType.Qualifying, i, numPossibleLaps)
       self.record_fastest_lap() 
-      results = self.constructSessionResults(SessionType.Qualifying)
+      results = self.constructSessionResults(SessionType.Qualifying, i, numPossibleLaps)
       #self.record_fastest_lap()
       self.socket.emit("update_qualifying_results", jsonpickle.encode(results, unpicklable=False))
       self.socket.sleep(2)
 
     self.record_fastest_lap() 
-    results = self.constructSessionResults(SessionType.Qualifying)
+    results = self.constructSessionResults(SessionType.Qualifying, numPossibleLaps, numPossibleLaps)
     
     #for entry in self.entry_list_:
     #  self.DEBUG_print_lap(self.lap_list_[self.position_dict_.get(entry.number)][0])
@@ -220,13 +220,13 @@ class SheetEngine(RaceEngine):
       self.addLogEntry(entry.drivers[entry.current_driver].name + " crashed " + track_part_name, LogEventType.crash)
       return FLOAT_MAX
 
-  def constructSessionResults(self, session_type :SessionType) -> SessionResult:
+  def constructSessionResults(self, session_type :SessionType, current_tick: int, total_ticks: int) -> SessionResult:
     self.sortEntryList()
     overall_list = []
     for entry in self.entry_list_:
       overall_list.append(self.overall_time.get(entry.number))
 
-    results = SessionResult(session_type, self.track_, self.entry_list_, overall_list, [], self.lap_dict_, self.fastest_lap, self.personal_best, [], self.log)
+    results = SessionResult(session_type, self.track_, self.entry_list_, overall_list, [], self.lap_dict_, self.fastest_lap, self.personal_best, [], self.log, current_tick, total_ticks)
     return results
 
   def record_fastest_lap(self):

@@ -97,7 +97,8 @@ class LogEntry():
   type: LogEventType
 
 class SessionResult():
-  def __init__(self, session :SessionType, track: Track, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict[Lap], personal_best:dict[Lap], position_chart = [], log :list[LogEntry] = []) -> None:
+  def __init__(self, session :SessionType, track: Track, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict[Lap], 
+                personal_best:dict[Lap], position_chart = [], log :list[LogEntry] = [], current_tick :int = 0, total_ticks :int = 0) -> None:
     self.session_ = session
     self.track_ = track
     self.entries_ = entries
@@ -112,6 +113,8 @@ class SessionResult():
     self.leader_time_ = self.time_[0] if len(self.time_) != 0 else 0
     self.best_sectors :dict[Lap] = self.setBestSectors()
     self.gap_ = self.setGap()
+    self.current_tick_ = current_tick
+    self.total_ticks_ = total_ticks
     
 
   def printLog(self):
@@ -185,6 +188,7 @@ class SessionResult():
   def __getstate__(self):
     return {
       "session": self.session_,
+      "track_name": self.track_.name,
       "entries": self.entries_,
       "time": list(map(utils.secToTimeStr,self.time_)),
       "gap": list(map(utils.secToTimeStr,self.gap_)),
@@ -195,7 +199,9 @@ class SessionResult():
       "log": self.log_,
       "leader_time": utils.secToTimeStr(self.leader_time_),
       "best_sectors": self.best_sectors,
-      "personal_best": self.personal_best_
+      "personal_best": self.personal_best_,
+      "current_tick": self.current_tick_,
+      "total_ticks": self.total_ticks_
     }
 
 

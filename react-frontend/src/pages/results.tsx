@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import { DriverResults } from '../types/types';
 import ResultsTable from "../components/ResultsTable/ResultsTable";
 import EventLog from "../components/EventLog/EventLog";
-import { Button, FormControlLabel, FormGroup, Grid, Stack, Switch } from "@mui/material";
+import { Button, CircularProgress, FormControlLabel, FormGroup, Grid, Stack, Switch } from "@mui/material";
 
 
 
@@ -25,7 +25,7 @@ export default function ResultsPage(props: any) {
     const [showTheoreticalBest, setShowTheoreticalBest] = useState(false);
 
     const [isPaused, setIsPaused] = useState(false);
-    const [simState, setSimState] = useState("");
+    const [simState, setSimState] = useState("Ready");
 
     useEffect(() => {
   
@@ -137,7 +137,15 @@ export default function ResultsPage(props: any) {
               <Grid xs={6}>
                 <Stack>
                   <h1>{fetchedData?.session} Results</h1>
-                  <h3>{simState}</h3>
+                  <Grid container display={"flex"} alignItems={"center"} columnSpacing={2}>
+                    <Grid item>
+                    <h3>{simState}</h3>
+                    </Grid>
+                    <Grid item>
+                    <CircularProgress variant="determinate"
+                      value={simState === "Finished" ? 100 : simState === "Ready" ? 0 : fetchedData?.current_tick / fetchedData?.total_ticks * 100} />
+                    </Grid>
+                  </Grid>
                 </Stack>
               </Grid>
               <Grid xs={6} display={"flex"} alignItems={"center"} justifyContent={"end"}>
