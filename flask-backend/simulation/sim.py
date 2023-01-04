@@ -53,6 +53,7 @@ def startTestQualifying(printResults: bool, socket: SocketIO):
     if printResults:
         result.printLog()
         result.printResults()
+    socket.emit("finished_qualifying")
     return buildResults(result)
 
 def pauseTestQualifying():

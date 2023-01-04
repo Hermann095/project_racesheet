@@ -47,11 +47,12 @@ class SheetEngine(RaceEngine):
     numQualiLaps = 3
 
     for i in range(numQualiLaps):
-      print(self.stateCallback())
       while self.stateCallback() == utils.SimulationState.Paused:
         print("paused simulation...")
+        self.socket.emit("paused_qualifying")
         self.socket.sleep(2)
         if self.stateCallback == utils.SimulationState.Cancelled:
+          self.socket.emit("cancelled_qualifying")
           return results
       
       self.calcLap(SessionType.Qualifying)

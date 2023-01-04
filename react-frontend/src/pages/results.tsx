@@ -25,6 +25,7 @@ export default function ResultsPage(props: any) {
     const [showTheoreticalBest, setShowTheoreticalBest] = useState(false);
 
     const [isPaused, setIsPaused] = useState(false);
+    const [simState, setSimState] = useState("");
 
     useEffect(() => {
   
@@ -41,9 +42,25 @@ export default function ResultsPage(props: any) {
       socket.on("disconnect", () => {
         console.log("disconnected");
       });
+
+      socket.on("cancelled_qualifying", () => {
+        console.log("cancelled_qualifying");
+        setSimState("Cancelled");
+      });
+
+      socket.on("finished_qualifying", () => {
+        console.log("finished_qualifying");
+        setSimState("Finished");
+      });
+
+      socket.on("paused_qualifying", () => {
+        console.log("paused_qualifying");
+        setSimState("Paused");
+      });
   
       socket?.on("update_qualifying_results", (data: any) => {
         console.log("recived data from update_qualifying_results");
+        setSimState("Running");
         let jsonData = JSON.parse(data)
         console.log(jsonData);
         setFetchedData(jsonData);
@@ -117,7 +134,10 @@ export default function ResultsPage(props: any) {
         <Container>
             <Grid container>
               <Grid xs={6}>
-                <h1>{fetchedData?.session} Results</h1>
+                <Stack>
+                  <h1>{fetchedData?.session} Results</h1>
+                  <h3>{simState}</h3>
+                </Stack>
               </Grid>
               <Grid xs={6} display={"flex"} alignItems={"center"} justifyContent={"end"}>
                   <FormGroup>
