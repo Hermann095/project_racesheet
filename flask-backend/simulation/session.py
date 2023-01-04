@@ -95,7 +95,7 @@ class LogEntry():
   type: LogEventType
 
 class SessionResult():
-  def __init__(self, session :SessionType, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict(), personal_best: dict(), position_chart = [], log :list[LogEntry] = []) -> None:
+  def __init__(self, session :SessionType, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict[Lap], personal_best:dict[Lap], position_chart = [], log :list[LogEntry] = []) -> None:
     self.session_ = session
     self.entries_ = entries
     self.time_ = time
@@ -107,7 +107,7 @@ class SessionResult():
     self.personal_best_ = personal_best
     self.sortResults()
     self.leader_time_ = self.time_[0]
-    self.best_sectors = self.setBestSectors()
+    self.best_sectors :dict[Lap] = self.setBestSectors()
     self.gap_ = self.setGap()
     
 
