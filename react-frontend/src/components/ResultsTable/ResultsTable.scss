@@ -44,3 +44,17 @@
 .slower-time-cell {
     background-color: #f9a825; //yellow 800
 }
+
+.color-cell-container {
+    display: flex;
+    flex-direction: column;
+    width: 5px;
+
+    span {
+        width: 100%;
+        height: calc(25px/ var(--num-colors));
+        display: block;
+        //border: solid 1px black;
+        background-color: var(--cell-color);
+    }
+}

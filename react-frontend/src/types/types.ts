@@ -15,6 +15,7 @@ export interface DriverResults {
         nationality: string,
         number: string,
         team: string,
+        color: Array<String>,
         sectors: Array<Sector>,
         time: string,
         gap: string,

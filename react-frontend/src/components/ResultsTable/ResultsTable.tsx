@@ -32,8 +32,10 @@ export default function ResultsTable(props: ResultsTableProbs) {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
+            <TableCell align="center">Pos</TableCell>
             {showEntryIcons ? <TableCell></TableCell> : <TableCell align="center">Number</TableCell>}
+            <TableCell align="center"></TableCell>
+            <TableCell>Name</TableCell>
             <TableCell align="center">Nationality</TableCell>
             <TableCell align="center">Team</TableCell>
             {showSectorBars ? 
@@ -46,17 +48,25 @@ export default function ResultsTable(props: ResultsTableProbs) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {Results.drivers?.map((row) => (
+          {Results.drivers?.map((row, index) => (
             <TableRow
               key={row.name}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
+              <TableCell align='center'>{index+1}</TableCell>
               {showEntryIcons ? 
                 <TableCell align="center"><img className='entry-icon' src={"/images/carsets/" + props.carsetName + "/entry_icons/" + row?.number + ".png"} alt=""></img></TableCell> 
                 : <TableCell align="center">{row?.number}</TableCell>}
+              <TableCell align='center'>
+                <div style={{"--num-colors": row.color.length.toString()} as React.CSSProperties} className="color-cell-container">
+                  {row.color.map((color, index) => (
+                    <ColorCell cellColor={color}></ColorCell>
+                  ))}
+                </div>
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {row.name}
+              </TableCell>
               <TableCell align="center"><img className="flag-icon" src={process.env.PUBLIC_URL + "/flags/" + row?.nationality} alt={"flag_" + row?.nationality}></img></TableCell>
               <TableCell align="center">{row.team}</TableCell>
               {showSectorBars ? 
@@ -83,8 +93,10 @@ export default function ResultsTable(props: ResultsTableProbs) {
         { showTheoreticalBest ?
         <TableFooter>
           <TableRow>
-            <TableCell>Theoretical best</TableCell>
+            <TableCell></TableCell>
             {showEntryIcons ? <TableCell></TableCell> : <TableCell align="center"></TableCell>}
+            <TableCell></TableCell>
+            <TableCell>Theoretical best</TableCell>
             <TableCell align="center"></TableCell>
             <TableCell align="center"></TableCell>
             {showSectorBars ? 
@@ -104,5 +116,11 @@ export default function ResultsTable(props: ResultsTableProbs) {
 function SectorCell(props: any) {
   return (
       <span className={props.cellClass}></span>
+  )
+}
+
+function ColorCell(props: any) {
+  return (
+      <span style={{"--cell-color": props.cellColor} as React.CSSProperties}></span>
   )
 }

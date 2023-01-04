@@ -10,7 +10,7 @@ class RaceEntry():
     sort_index: float = field(init=False)
     number :str
     team :str
-    color :str
+    color :list[str]
     chassis :chassis.Chassis
     engine :engine.Engine
     tyres :tyres.Tyres

@@ -107,7 +107,7 @@ export default function ResultsPage(props: any) {
         let fastest_lap = {time: fastest_lap_object.time, sector_times: fastest_lap_object.sector_times}
         let sectors = data.fastest_lap[entry.number].sector_times
         
-        return {name: driver.name, nationality: driver.nation, number: entry.number, team: entry.team, sectors: sectors, time: time, gap: gap, fastestLap: fastest_lap};
+        return {name: driver.name, nationality: driver.nation, number: entry.number, team: entry.team, color: entry.color, sectors: sectors, time: time, gap: gap, fastestLap: fastest_lap};
       })
 
       let best_lap = {time: data?.best_sectors.time, sector_times: data?.best_sectors.sector_times};
