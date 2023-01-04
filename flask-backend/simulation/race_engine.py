@@ -64,9 +64,7 @@ class RaceEngine():
     self.overall_time = overall
 
   def recordLap(self, entry :race_entry.RaceEntry, lap :session.Lap):
-    #
-    # TODO: fix bug where personal best times are saved in first posted lap time
-    #
+
     try:
       for index, sector in enumerate(self.personal_best.get(entry.number).sector_times):
         if lap.sector_times[index].time < sector.time:
