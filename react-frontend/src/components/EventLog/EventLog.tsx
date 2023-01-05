@@ -4,7 +4,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-import { EventLogProbs, EventLogItem } from '../../types/types';
+import { EventLogProbs, LogItem, LogDetailLevel, LogType } from '../../types/types';
 import { FormControl, FormLabel, Grid, Slider } from '@mui/material';
 import { red, orange, green, yellow, purple } from '@mui/material/colors';
 
@@ -14,7 +14,7 @@ function renderRow(props: ListChildComponentProps) {
 
   let styleItem = {};
 
-  if (data[index].type === "default"){
+  /*if (data[index].type === "default"){
     styleItem = {}
   } else if (data[index].type === "crash") {
     styleItem = {backgroundColor: orange[900]}
@@ -34,6 +34,39 @@ function renderRow(props: ListChildComponentProps) {
     styleItem = {backgroundColor: green[900]}
   } else if (data[index].type === "mistake") {
     styleItem = {color: orange[900]}
+  }*/
+
+  switch (data[index].type) {
+    case LogType.Crash:
+      styleItem = {backgroundColor: orange[900]}
+      break;
+    case LogType.Retirement:
+      styleItem = {color: red[900]}
+      break;
+    case LogType.NewLeader:
+      styleItem = {color: green[900]}
+      break;
+    case LogType.YellowFlag:
+      styleItem = {backgroundColor: yellow[800]}
+      break;
+    case LogType.RedFlag:
+      styleItem = {backgroundColor: red[900]}
+      break;
+    case LogType.PurpleSector:
+      styleItem = {color: purple[900]}
+      break;
+    case LogType.FastestLap:
+      styleItem = {backgroundColor: purple[500]}
+      break;
+    case LogType.PersonalBest:
+      styleItem = {backgroundColor: green[900]}
+      break;
+    case LogType.Mistake:
+      styleItem = {color: orange[900]}
+      break;
+    default:
+      styleItem = {}
+      break;
   }
 
 
@@ -60,13 +93,13 @@ export default function EventLog(props: EventLogProbs) {
       events = []
     }
 
-    if (detailLevel === "high") {
+    if (detailLevel === LogDetailLevel.High) {
       events = props.events;
     }
-    else if (detailLevel === "medium") {
-      events = props.events?.filter((event: EventLogItem) => event.detailLevel !== "high")
+    else if (detailLevel === LogDetailLevel.Medium) {
+      events = props.events?.filter((event: LogItem) => event.detailLevel !== LogDetailLevel.High)
     } else {
-      events = props.events?.filter((event: EventLogItem) => event.detailLevel === "low")
+      events = props.events?.filter((event: LogItem) => event.detailLevel === LogDetailLevel.Low)
     }
 
     numItems = events?.length;

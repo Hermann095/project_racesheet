@@ -31,7 +31,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
             <TableCell align="center">Nationality</TableCell>
             <TableCell align="center">Team</TableCell>
             <TableCell align="center">Laps</TableCell>
-            <ResultsTableSectorsHead sectors={Results.drivers[0].sectors} bestLap={Results.bestLap} showSectorBars={showSectorBars}></ResultsTableSectorsHead>
+            <ResultsTableSectorsHead sectors={Results?.drivers[0]?.sectors} bestLap={Results.bestLap} showSectorBars={showSectorBars}></ResultsTableSectorsHead>
             <TableCell align="center">Time</TableCell>
             <TableCell align="center">Gap</TableCell>
           </TableRow>
