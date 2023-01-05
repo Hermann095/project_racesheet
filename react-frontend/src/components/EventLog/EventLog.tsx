@@ -14,28 +14,6 @@ function renderRow(props: ListChildComponentProps) {
 
   let styleItem = {};
 
-  /*if (data[index].type === "default"){
-    styleItem = {}
-  } else if (data[index].type === "crash") {
-    styleItem = {backgroundColor: orange[900]}
-  } else if (data[index].type === "retirement") {
-    styleItem = {color: red[900]}
-  } else if (data[index].type === "newLeader") {
-    styleItem = {color: green[900]}
-  } else if (data[index].type === "yellowFlag") {
-    styleItem = {backgroundColor: yellow[800]}
-  } else if (data[index].type === "redFlag") {
-    styleItem = {backgroundColor: red[900]}
-  } else if (data[index].type === "purpleSector") {
-    styleItem = {color: purple[900]}
-  } else if (data[index].type === "fastestLap") {
-    styleItem = {backgroundColor: purple[500]}
-  } else if (data[index].type === "personalBest") {
-    styleItem = {backgroundColor: green[900]}
-  } else if (data[index].type === "mistake") {
-    styleItem = {color: orange[900]}
-  }*/
-
   switch (data[index].type) {
     case LogType.Crash:
       styleItem = {backgroundColor: orange[900]}
