@@ -21,7 +21,6 @@ def secToTimeStr(race_time :float) -> str:
     elif race_time < FLOAT_MAX and race_time > FLOAT_MAX / 2:
         return "---"
     temp_time = round(race_time, 3)
-    print({"race_time":  race_time, "temp_time":  temp_time})
     hours = 0
     minutes = 0
     seconds = 0
