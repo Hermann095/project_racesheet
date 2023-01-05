@@ -12,12 +12,16 @@ class SimulationState(enum.Enum):
 def isNan(num) -> bool:
     return num != num
 
+def isInvalid(num) -> bool:
+    return isNan(num) or math.isinf(num)
+
 def secToTimeStr(race_time :float) -> str:
-    if race_time == FLOAT_MAX or isNan(race_time):
+    if race_time == FLOAT_MAX or isInvalid(race_time):
         return "No Time"
     elif race_time < FLOAT_MAX and race_time > FLOAT_MAX / 2:
         return "---"
     temp_time = round(race_time, 3)
+    print({"race_time":  race_time, "temp_time":  temp_time})
     hours = 0
     minutes = 0
     seconds = 0

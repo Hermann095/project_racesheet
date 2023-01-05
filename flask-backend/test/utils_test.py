@@ -1,4 +1,4 @@
-from simulation.utils import isNan, FLOAT_MAX, secToTimeStr, nationCodeToFlag
+from simulation.utils import isNan, isInvalid, FLOAT_MAX, secToTimeStr, nationCodeToFlag
 
 #isNan
 def test_nan():
@@ -12,6 +12,25 @@ def test_nan3():
 
 def test_nan4():
     assert isNan(123) == False
+
+def test_nan5():
+    assert isNan(float("inf")) == False
+
+#isInvalid
+def test_valid():
+    assert isInvalid(1.0) == False
+
+def test_valid2():
+    assert isInvalid(float("nan")) == True
+
+def test_valid3():
+    assert isInvalid(FLOAT_MAX) == False
+
+def test_valid4():
+    assert isInvalid(123) == False
+
+def test_valid5():
+    assert isInvalid(float("inf")) == True
 
 #secToTimeStr
 def test_secToTimeStr():
@@ -37,6 +56,12 @@ def test_secToTimeStr7():
 
 def test_secToTimeStr8():
     assert secToTimeStr(3672.998) == "1:01:12.998"
+
+def test_secToTimeStr9():
+    assert secToTimeStr(float("inf")) == "No Time"
+
+def test_secToTimeStr10():
+    assert secToTimeStr(float("-inf")) == "No Time"
 
 
 #nationCodeToFlag
