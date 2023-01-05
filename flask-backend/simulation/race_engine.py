@@ -100,7 +100,9 @@ class RaceEngine():
       else:
         lap.sector_times[index].state = session.SectorTimeState.yellow
 
-
+  #
+  # TODO: rewrite or delete, not working currently
+  #
   def swapPosition(self, entry_1 : race_entry.RaceEntry, entry_2 : race_entry.RaceEntry):
     position_1 = self.position_dict_.get(entry_1.number)
     position_2 = self.position_dict_.get(entry_2.number)

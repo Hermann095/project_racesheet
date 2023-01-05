@@ -32,6 +32,13 @@ def get_entry_list():
     entry_b = RaceEntry("95", "Team B", ["#F5A114"], Chassis("Chassis B", "Team B", 1000, 1000, 100, 1000, 350, 1000), Engine("Engine B", 1000, 1000, 1000, 1000, 1000, 155, 1000), Tyres("Tyre B", 1000, 1000, 1000, 1000), [Driver("B", "BRA", "Team B", 1000, 1000, 1000, 1000, 1000)])
     return [entry_a, entry_a2, entry_b]
 
+@pytest.fixture
+def get_entry_list2():
+    entry_a = RaceEntry("13", "Team A", ["#000000"], Chassis("Chassis A", "Team A", 500, 500, 500, 500, 350, 500), Engine("Engine A", 500, 500, 500, 500, 500, 155, 500), Tyres("Tyre A", 500, 500, 500, 500), [Driver("Heinz-Harald Frentzen", "GER", "Team A", 500, 500, 500, 500, 500)])
+    entry_a2 = RaceEntry("46", "Team A", ["#f50537", "#666666"], Chassis("Chassis A", "Team A", 500, 500, 500, 500, 350, 500), Engine("Engine A", 500, 500, 500, 500, 500, 155, 500), Tyres("Tyre A", 500, 500, 500, 500), [Driver("a2", "FIN", "Team A", 500, 500, 500, 500, 500)])
+    entry_b = RaceEntry("95", "Team B", ["#F5A114"], Chassis("Chassis B", "Team B", 1000, 1000, 100, 1000, 350, 1000), Engine("Engine B", 1000, 1000, 1000, 1000, 1000, 155, 1000), Tyres("Tyre B", 1000, 1000, 1000, 1000), [Driver("B", "BRA", "Team B", 1000, 1000, 1000, 1000, 1000)])
+    return [ entry_a2, entry_b, entry_a ]
+
 #add_log_entry
 def test_add_log(log_entry, get_track, get_entry_list):
     engine =  RaceEngine(get_track, get_entry_list)
@@ -54,3 +61,26 @@ def test_retired2(get_track, get_entry_list):
     engine =  RaceEngine(get_track, get_entry_list)
     engine.retired = ["13", "1", "8"]
     assert engine.isRetired("12") == False
+
+#swap position
+
+#sort entry list
+def test_sort_entry_list(get_track, get_entry_list):
+    engine =  RaceEngine(get_track, get_entry_list)
+    engine.initPositionDict()
+    engine.sortEntryList()
+    assert engine.entry_list_ == get_entry_list
+
+def test_sort_entry_list2(get_track, get_entry_list, get_entry_list2):
+    engine =  RaceEngine(get_track, get_entry_list)
+    engine.initPositionDict()
+    engine.position_dict_ = {"13": 2, "46": 0, "95": 1}
+    engine.sortEntryList()
+    assert engine.entry_list_ == get_entry_list2
+
+def test_sort_entry_list3(get_track, get_entry_list2):
+    engine =  RaceEngine(get_track, get_entry_list2)
+    engine.setEntryList([])
+    engine.initPositionDict()
+    engine.sortEntryList()
+    assert engine.entry_list_ == []
