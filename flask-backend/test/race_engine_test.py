@@ -32,7 +32,7 @@ def get_entry_list():
     entry_b = RaceEntry("95", "Team B", ["#F5A114"], Chassis("Chassis B", "Team B", 1000, 1000, 100, 1000, 350, 1000), Engine("Engine B", 1000, 1000, 1000, 1000, 1000, 155, 1000), Tyres("Tyre B", 1000, 1000, 1000, 1000), [Driver("B", "BRA", "Team B", 1000, 1000, 1000, 1000, 1000)])
     return [entry_a, entry_a2, entry_b]
 
-
+#add_log_entry
 def test_add_log(log_entry, get_track, get_entry_list):
     engine =  RaceEngine(get_track, get_entry_list)
     engine.addLogEntry("Test Entry", LogDetailLevel.high, LogEventType.mistake)
@@ -43,3 +43,14 @@ def test_add_log2(log_entry, get_track, get_entry_list, log_entry2):
     engine.addLogEntry("Test Entry", LogDetailLevel.high, LogEventType.mistake)
     engine.addLogEntry("Test Entry")
     assert engine.log == [log_entry, log_entry2]
+
+#isRetired
+def test_retired(get_track, get_entry_list):
+    engine =  RaceEngine(get_track, get_entry_list)
+    engine.retired = ["13", "1", "8"]
+    assert engine.isRetired("1") == True
+
+def test_retired2(get_track, get_entry_list):
+    engine =  RaceEngine(get_track, get_entry_list)
+    engine.retired = ["13", "1", "8"]
+    assert engine.isRetired("12") == False
