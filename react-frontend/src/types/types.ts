@@ -33,6 +33,12 @@ export interface ResultsTableProbs extends React.HTMLProps<HTMLBaseElement> {
     carsetName: string
 }
 
+export interface ResultsTableSectorsProbs extends React.HTMLProps<HTMLBaseElement> {
+    sectors?: Array<Sector>,
+    bestLap?: BestLap
+    showSectorBars?: boolean,
+}
+
 export interface EventLogItem {
     text: string,
     detailLevel: string,

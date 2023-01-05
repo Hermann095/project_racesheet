@@ -10,22 +10,14 @@ import Paper from '@mui/material/Paper';
 import { ResultsTableProbs } from '../../types/types';
 import "../ResultsTable/ResultsTable.scss"
 import { TableFooter } from '@mui/material';
+import { ResultsTableSectorsBody, ResultsTableSectorsFooter, ResultsTableSectorsHead } from './ResultsTableSectors';
 
 export default function ResultsTable(props: ResultsTableProbs) {
-
-  //const [showSectorBars, setShowSectorBars] = React.useState(true);
   
   let showSectorBars = props.showSectorBars;
   let showEntryIcons = props.showEntryIcons;
   let showTheoreticalBest = props.showTheoreticalBest;
   let Results = props.Results;
-  let numSectors = 0
-  if (Results !== undefined) {
-    numSectors = Number(Results?.bestLap?.sector_times.length);
-  }
-  //console.log(Results);
-
-  //file:///C:/Users/tomi_/Desktop/alternate_f1/project_racesheet_flask_react/project_racesheet/carsets/test123/
 
   return (
     <TableContainer component={Paper}>
@@ -39,11 +31,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
             <TableCell align="center">Nationality</TableCell>
             <TableCell align="center">Team</TableCell>
             <TableCell align="center">Laps</TableCell>
-            {showSectorBars ? 
-              <TableCell align='center'>Sectors</TableCell>
-            : Results.drivers[0]?.sectors.map((sector, index) => (
-                <TableCell align='center'>Sector {index+1}</TableCell>
-            ))}
+            <ResultsTableSectorsHead sectors={Results.drivers[0].sectors} bestLap={Results.bestLap} showSectorBars={showSectorBars}></ResultsTableSectorsHead>
             <TableCell align="center">Time</TableCell>
             <TableCell align="center">Gap</TableCell>
           </TableRow>
@@ -71,23 +59,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
               <TableCell align="center"><img className="flag-icon" src={process.env.PUBLIC_URL + "/flags/" + row?.nationality} alt={"flag_" + row?.nationality}></img></TableCell>
               <TableCell align="center">{row.team}</TableCell>
               <TableCell align="center">{row.laps}</TableCell>
-              {showSectorBars ? 
-                (<TableCell>
-                  <div style={{"--num-sectors": numSectors.toString()} as React.CSSProperties} className="sector-cell-container">
-                  {row.sectors.map((sector_time, index) => (
-                    sector_time.time !== "No Time" ?
-                    <SectorCell 
-                      cellClass={sector_time.time === Results.bestLap?.sector_times[index].time ? "fastest-time-cell" : (sector_time.state === "green" ? "personal-best-cell" : "slower-time-cell")}>
-                      </SectorCell> : null))}
-                  </div>
-                </TableCell>)
-              : (row.sectors.map((sector_time, index) => (
-                <TableCell align='center'>
-                  <span className={sector_time.time === Results.bestLap?.sector_times[index].time ? "fastest-time" : (sector_time.state === "green" ? "personal-best" : "slower-time")}>
-                      {sector_time.time === "No Time" ? "" : sector_time.time}
-                      </span>
-                </TableCell>)
-              ))}
+              <ResultsTableSectorsBody sectors={row.fastestLap?.sector_times} bestLap={Results.bestLap} showSectorBars={showSectorBars}></ResultsTableSectorsBody>
               <TableCell align="center">{row.time}</TableCell>
               <TableCell align="center">{row.gap === "No Time" ? "" : ("+ " + row.gap)}</TableCell>
             </TableRow>
@@ -103,11 +75,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
             <TableCell align="center"></TableCell>
             <TableCell align="center"></TableCell>
             <TableCell align="center"></TableCell>
-            {showSectorBars ? 
-              <TableCell align='center'></TableCell>
-            : Results.bestLap?.sector_times.map((sector, index) => (
-                <TableCell align='center'>{sector.time}</TableCell>
-            ))}
+            <ResultsTableSectorsFooter bestLap={Results.bestLap} showSectorBars={showSectorBars}></ResultsTableSectorsFooter>
             <TableCell align="center">{Results.bestLap?.time}</TableCell>
             <TableCell align="center"></TableCell>
           </TableRow>
@@ -117,11 +85,6 @@ export default function ResultsTable(props: ResultsTableProbs) {
   );
 }
 
-function SectorCell(props: any) {
-  return (
-      <span className={props.cellClass}></span>
-  )
-}
 
 function ColorCell(props: any) {
   return (
