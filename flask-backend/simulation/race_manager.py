@@ -32,5 +32,5 @@ class RaceManager(metaclass=RaceManagerMeta):
   def setEntryList(self, entry_list :list):
     self.engine_.setEntryList(entry_list)
 
-  def startSession(self, session :session.SessionType, socket: SocketIO, stateCallback: Callable):
-    return self.engine_.startSession(session, socket, stateCallback)
+  def startSession(self, session :session.SessionType, socket: SocketIO, stateCallback: Callable, simSpeedCallback: Callable):
+    return self.engine_.startSession(session, socket, stateCallback, simSpeedCallback)

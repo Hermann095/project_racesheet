@@ -84,7 +84,7 @@ export default function ResultsPage(props: any) {
     function runQualifying() {
       setIsPaused(false)
       if (isPaused) {
-        socketInstance?.emit("resume_qualifying");
+        socketInstance?.emit("resume_qualifying", {simSpeed: 0.1});
       } else {
         socketInstance?.emit("run_qualifying", {printResults: false});
       }

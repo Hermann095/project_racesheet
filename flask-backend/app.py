@@ -4,6 +4,7 @@ from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from simulation.sim import startTestQualifying
 import json as JSON
+import numbers
 
 
 app = Flask(__name__)
@@ -76,7 +77,14 @@ def run_ws_qualifying(json):
     print("recieved run_qualifying")
     print((str(json)))
     #printResults = JSON.loads(json)
-    result = startTestQualifying(json["printResults"], socketio)
+    simSpeed = 1
+
+    if "simSpeed" in json:
+            newSimSpeed = json["simSpeed"]
+            if isinstance(newSimSpeed, numbers.Number):
+                simSpeed = newSimSpeed
+
+    result = startTestQualifying(json["printResults"], socketio, simSpeed)
     #emit("update_qualifying_results", result)
 
 

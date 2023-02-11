@@ -13,9 +13,12 @@ from flask_socketio import SocketIO
 
 
 state = utils.SimulationState.Running
+simSpeed = 1
 
-def startTestQualifying(printResults: bool, socket: SocketIO):
+def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: float = 1.0):
     
+    global simSpeed
+    simSpeed = baseSimSpeed
     
     @socket.on("pause_qualifying")
     def pause_qualifying():
@@ -24,8 +27,13 @@ def startTestQualifying(printResults: bool, socket: SocketIO):
         state = utils.SimulationState.Paused
 
     @socket.on("resume_qualifying")
-    def resume_qualifying():
-        print("recieved resume_qualifying")
+    def resume_qualifying(json):
+        print("recieved resume_qualifying with " + str(json))
+
+        global simSpeed
+        if "simSpeed" in json:
+            simSpeed = json["simSpeed"]
+
         global state
         state = utils.SimulationState.Running
 
@@ -39,6 +47,10 @@ def startTestQualifying(printResults: bool, socket: SocketIO):
         global state
         return state
 
+    def getSimSpeed() -> float:
+        global simSpeed
+        return simSpeed
+
 
     rm = race_manager.RaceManager()
     entry_a = RaceEntry("13", "Team A", ["#000000"], Chassis("Chassis A", "Team A", 500, 500, 500, 500, 350, 500), Engine("Engine A", 500, 500, 500, 500, 500, 155, 500), Tyres("Tyre A", 500, 500, 500, 500), [Driver("Heinz-Harald Frentzen", "GER", "Team A", 500, 500, 500, 500, 500)])
@@ -49,7 +61,7 @@ def startTestQualifying(printResults: bool, socket: SocketIO):
     entry_c2 = RaceEntry("2", "Team C", ["#8b0000"], Chassis("Chassis C", "Team C", 100, 100, 1000, 100, 350, 100), Engine("Engine A", 100, 100, 100, 100, 100, 155, 100), Tyres("Tyre A", 100, 100, 100, 100), [Driver("c2", "USA", "Team A", 100, 100, 100, 100, 100)])
     entry_list = [entry_a, entry_a2, entry_b, entry_b2, entry_c, entry_c2]
     rm.setEntryList(entry_list)
-    result = rm.startSession(SessionType.Qualifying, socket, getState)
+    result = rm.startSession(SessionType.Qualifying, socket, getState, getSimSpeed)
     if printResults:
         result.printLog()
         result.printResults()

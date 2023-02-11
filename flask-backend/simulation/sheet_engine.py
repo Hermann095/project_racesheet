@@ -16,9 +16,10 @@ FLOAT_MAX = utils.FLOAT_MAX
 
 class SheetEngine(RaceEngine):
 
-  def startSession(self, session :SessionType, socket: SocketIO, stateCallback: Callable) -> SessionResult:
+  def startSession(self, session :SessionType, socket: SocketIO, stateCallback: Callable, simSpeedCallback: Callable) -> SessionResult:
     self.socket = socket
     self.stateCallback : Callable = stateCallback
+    self.simSpeedCallback : Callable = simSpeedCallback
     self.initSession()
     if session == SessionType.Practice:
       result = self.practice()
@@ -63,7 +64,7 @@ class SheetEngine(RaceEngine):
       results = self.constructSessionResults(SessionType.Qualifying, i, numPossibleLaps)
       #self.record_fastest_lap()
       self.socket.emit("update_qualifying_results", jsonpickle.encode(results, unpicklable=False))
-      self.socket.sleep(2)
+      self.socket.sleep(self.simSpeedCallback())
 
     self.record_fastest_lap() 
     results = self.constructSessionResults(SessionType.Qualifying, numPossibleLaps, numPossibleLaps)
