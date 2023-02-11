@@ -156,7 +156,7 @@ export default function ResultsPage(props: any) {
 
     return (
         <>
-        <Container>
+        <Container maxWidth="xl">
             <Grid container>
               <Grid xs={6}>
                 <Stack>

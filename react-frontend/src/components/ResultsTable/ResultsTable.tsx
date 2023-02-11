@@ -34,6 +34,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
             <ResultsTableSectorsHead sectors={Results?.drivers[0]?.sectors} bestLap={Results.bestLap} showSectorBars={showSectorBars}></ResultsTableSectorsHead>
             <TableCell align="center">Time</TableCell>
             <TableCell align="center">Gap</TableCell>
+            <TableCell align="center">State</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -62,6 +63,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
               <ResultsTableSectorsBody sectors={row.fastestLap?.sector_times} bestLap={Results.bestLap} showSectorBars={showSectorBars}></ResultsTableSectorsBody>
               <TableCell align="center">{row.time}</TableCell>
               <TableCell align="center">{row.gap === "No Time" ? "" : ("+ " + row.gap)}</TableCell>
+              <TableCell align="center" className="results-table-state-cell">{row.state}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -77,6 +79,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
             <TableCell align="center"></TableCell>
             <ResultsTableSectorsFooter bestLap={Results.bestLap} showSectorBars={showSectorBars}></ResultsTableSectorsFooter>
             <TableCell align="center">{Results.bestLap?.time}</TableCell>
+            <TableCell align="center"></TableCell>
             <TableCell align="center"></TableCell>
           </TableRow>
         </TableFooter> : null}

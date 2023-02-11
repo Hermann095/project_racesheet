@@ -11,7 +11,8 @@ export interface DriverResults {
         sectors: Sector[],
         time: string,
         gap: string,
-        fastestLap?: Lap
+        fastestLap?: Lap,
+        state: EntryState,
     }>
     bestLap?: Lap
 }
@@ -71,6 +72,15 @@ export enum State {
     White = "white"
 }
 
+export enum EntryState {
+    Garage = "garage",
+    OutLap = "outlap",
+    Running = "running",
+    InLap = "inlap",
+    PitStop = "pitstop",
+    Retired = "retired"
+}
+
 export interface Entry {
     number:         string;
     team:           string;
@@ -81,6 +91,7 @@ export interface Entry {
     drivers:        Driver[];
     current_driver: number;
     sort_index:     string;
+    state:          EntryState;
 }
 
 export interface Chassis {
