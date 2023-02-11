@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import { DriverResults, SimState } from '../types/types';
 import ResultsTable from "../components/ResultsTable/ResultsTable";
 import EventLog from "../components/EventLog/EventLog";
-import { Button, CircularProgress, FormControlLabel, FormGroup, Grid, Stack, Switch } from "@mui/material";
+import { Button, CircularProgress, FormControlLabel, FormGroup, Grid, Stack, Switch, FormControl, FormLabel, Slider } from "@mui/material";
 import { convertSessionResultsToDriverResults } from "../utils/utils";
 
 
@@ -27,6 +27,8 @@ export default function ResultsPage(props: any) {
 
     const [isPaused, setIsPaused] = useState(false);
     const [simState, setSimState] = useState(SimState.Ready);
+
+    const [simSpeed, setSimSpeed] = useState(1);
 
     useEffect(() => {
   
@@ -81,12 +83,19 @@ export default function ResultsPage(props: any) {
       });
     }, []);
 
+    useEffect(() => {
+      if (simState === SimState.Running) {
+        socketInstance?.emit("resume_qualifying", {simSpeed: simSpeed});
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [simSpeed]);
+
     function runQualifying() {
       setIsPaused(false)
       if (isPaused) {
-        socketInstance?.emit("resume_qualifying", {simSpeed: 0.1});
+        socketInstance?.emit("resume_qualifying", {simSpeed: simSpeed});
       } else {
-        socketInstance?.emit("run_qualifying", {printResults: false});
+        socketInstance?.emit("run_qualifying", {printResults: false, simSpeed: simSpeed});
       }
     }
 
@@ -107,6 +116,43 @@ export default function ResultsPage(props: any) {
       setShowTheoreticalBest(checked)
     }
 
+    const simSpeedMarks = [
+      {
+        value: 0,
+        label: 'Very Slow',
+        speed: 3,
+      },
+      {
+        value: 25,
+        label: 'Slow',
+        speed: 2,
+      },
+      {
+        value: 50,
+        label: 'Standard',
+        speed: 1,
+      },
+      {
+        value: 75,
+        label: 'Fast',
+        speed: 0.5,
+      },
+      {
+        value: 100,
+        label: 'Very Fast',
+        speed: 0.1,
+      },
+    ];
+
+    const handleSimSpeedChange = (event: any, value: any) => {
+      let index = simSpeedMarks.findIndex((mark) => mark.value === value);
+      setSimSpeed(simSpeedMarks[index].speed)
+    };
+
+    function valueSimSpeedLabelFormat(value: number) {
+      let index = simSpeedMarks.findIndex((mark) => mark.value === value);
+      return simSpeedMarks[index].label;
+    }
 
     return (
         <>
@@ -122,6 +168,21 @@ export default function ResultsPage(props: any) {
                     <Grid item>
                     <CircularProgress variant="determinate"
                       value={simState === "Finished" ? 100 : simState === "Ready" ? 0 : fetchedData?.current_tick / fetchedData?.total_ticks * 100} />
+                    </Grid>
+                    <Grid item>
+                      <FormControl>
+                      <FormLabel sx={{display: 'inline'}}>Sim Speed</FormLabel>
+                      <Slider 
+                        defaultValue={50}
+                        valueLabelFormat={valueSimSpeedLabelFormat}
+                        valueLabelDisplay='auto'
+                        marks
+                        step={25}
+                        min={0}
+                        max={100}
+                        onChange={handleSimSpeedChange}
+                        />
+                      </FormControl>
                     </Grid>
                   </Grid>
                 </Stack>

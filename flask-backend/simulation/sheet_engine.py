@@ -51,7 +51,6 @@ class SheetEngine(RaceEngine):
     numPossibleLaps = math.ceil(sessionLenght / self.track_.lap_time())
 
     for i in range(numPossibleLaps):
-      print({"simState": self.stateCallback()})
       while self.stateCallback() == utils.SimulationState.Paused:
         print("paused simulation...")
         self.socket.emit("paused_qualifying")
