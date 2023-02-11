@@ -8,6 +8,7 @@ from .race_entry import RaceEntry
 from .tyres import Tyres
 import simulation.utils as utils
 import jsonpickle
+import numbers
 
 from flask_socketio import SocketIO
 
@@ -18,7 +19,9 @@ simSpeed = 1
 def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: float = 1.0):
     
     global simSpeed
+    global state
     simSpeed = baseSimSpeed
+    state = utils.SimulationState.Running
     
     @socket.on("pause_qualifying")
     def pause_qualifying():
@@ -30,11 +33,17 @@ def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: floa
     def resume_qualifying(json):
         print("recieved resume_qualifying with " + str(json))
 
+        global state
+        if state == utils.SimulationState.Cancelled:
+            print("session was already cancelled")
+            return
+
         global simSpeed
         if "simSpeed" in json:
-            simSpeed = json["simSpeed"]
+            newSimSpeed = json["simSpeed"]
+            if isinstance(newSimSpeed, numbers.Number):
+                simSpeed = newSimSpeed
 
-        global state
         state = utils.SimulationState.Running
 
     @socket.on("cancel_qualifying")
@@ -42,7 +51,7 @@ def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: floa
         print("recieved cancel_qualifying")
         global state
         state = utils.SimulationState.Cancelled
-
+    
     def getState() -> utils.SimulationState:
         global state
         return state
@@ -67,12 +76,14 @@ def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: floa
         result.printResults()
     socket.emit("finished_qualifying")
     return buildResults(result)
-
-def pauseTestQualifying():
-    return
     
 
 def buildResults(result: SessionResult):
     return jsonpickle.encode(result, unpicklable=False)
+
+def disconnectionHandler():
+    print("called disconnectionHandler")
+    global state
+    state = utils.SimulationState.Cancelled
 
 

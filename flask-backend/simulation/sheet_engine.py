@@ -51,13 +51,16 @@ class SheetEngine(RaceEngine):
     numPossibleLaps = math.ceil(sessionLenght / self.track_.lap_time())
 
     for i in range(numPossibleLaps):
+      print({"simState": self.stateCallback()})
       while self.stateCallback() == utils.SimulationState.Paused:
         print("paused simulation...")
         self.socket.emit("paused_qualifying")
         self.socket.sleep(2)
-        if self.stateCallback == utils.SimulationState.Cancelled:
-          self.socket.emit("cancelled_qualifying")
-          return results
+      
+      if self.stateCallback() == utils.SimulationState.Cancelled:
+        self.socket.emit("cancelled_qualifying")
+        results = self.constructSessionResults(SessionType.Qualifying, i, numPossibleLaps)
+        return results
       
       self.calcLap(SessionType.Qualifying, i, numPossibleLaps)
       self.record_fastest_lap() 

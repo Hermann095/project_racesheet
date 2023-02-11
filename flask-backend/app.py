@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, send_from_directory
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
-from simulation.sim import startTestQualifying
+from simulation.sim import startTestQualifying, disconnectionHandler
 import json as JSON
 import numbers
 
@@ -69,6 +69,7 @@ def connected():
 
 @socketio.on("disconnect")
 def disconnected():
+    disconnectionHandler()
     print("client disconnected")
     emit("disconnect",f"user {request.sid} disconnected",broadcast=True)
 
