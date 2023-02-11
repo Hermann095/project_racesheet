@@ -1,8 +1,8 @@
 from copy import copy, deepcopy
 from time import time
 
+from .race_entry import RaceEntry, EntryState
 import simulation.track as track
-import simulation.race_entry as race_entry
 import simulation.session as session
 import simulation.utils as utils
 
@@ -12,14 +12,13 @@ from typing import Callable
 
 
 class RaceEngine():
-  def __init__(self, track :track.Track, entry_list :list[race_entry.RaceEntry], options = session.SessionOptions()) -> None:
+  def __init__(self, track :track.Track, entry_list :list[RaceEntry], options = session.SessionOptions()) -> None:
     self.track_ = track
     self.entry_list_ = entry_list
     self.options_ = options
     self.lap_dict_ : dict[str, list[session.Lap]] = {}
     self.position_dict_ : dict[str, int] = {}
     self.overall_time_ : dict[str, float] = {}
-    self.retired = []
     self.log = []
     self.fastest_lap : dict[str, session.Lap] = {}
     self.personal_best : dict[str, session.Lap] = {}
@@ -27,7 +26,7 @@ class RaceEngine():
   def setTrack(self, track :track.Track):
     self.track_ = track
 
-  def setEntryList(self, entry_list :list[race_entry.RaceEntry]):
+  def setEntryList(self, entry_list :list[RaceEntry]):
     self.entry_list_ = entry_list
 
   def startSession(self, session :session.SessionType, socket: SocketIO, stateCallback: Callable, simSpeedCallback: Callable) -> session.SessionResult:
@@ -39,7 +38,6 @@ class RaceEngine():
     self.initOverallTime()
     self.initFastestLapDict()
     self.initPersonalBestDict()
-    self.retired = []
     self.log = []
     #self.fastest_lap = dict()
     #self.personal_best = dict()
@@ -81,7 +79,7 @@ class RaceEngine():
 
     self.personal_best = personal_best
 
-  def recordLap(self, entry :race_entry.RaceEntry, lap :session.Lap):
+  def recordLap(self, entry :RaceEntry, lap :session.Lap):
 
     self.lap_dict_[entry.number].append(lap)
 
@@ -103,7 +101,7 @@ class RaceEngine():
   #
   # TODO: rewrite or delete, not working currently
   #
-  def swapPosition(self, entry_1 : race_entry.RaceEntry, entry_2 : race_entry.RaceEntry):
+  def swapPosition(self, entry_1 : RaceEntry, entry_2 : RaceEntry):
     position_1 = self.position_dict_.get(entry_1.number)
     position_2 = self.position_dict_.get(entry_2.number)
 
@@ -127,13 +125,6 @@ class RaceEngine():
 
     self.entry_list_ = new_entry_list
 
-
-  def isRetired(self, car_number :int):
-    try:
-      self.retired.index(car_number)
-      return True
-    except:
-      return False
 
   def addLogEntry(self, message: str, detail_level: session.LogDetailLevel = session.LogDetailLevel.low, type: session.LogEventType = session.LogEventType.default):
     new_entry = session.LogEntry(message, detail_level, type)

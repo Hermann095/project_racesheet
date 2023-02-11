@@ -3,7 +3,7 @@ from random import randint
 from .race_engine import RaceEngine
 from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime, SectorTimeState
 from .track import MicroSector, Track
-from .race_entry import RaceEntry
+from .race_entry import RaceEntry, EntryState
 import simulation.utils as utils
 from flask_socketio import SocketIO, emit
 import time
@@ -106,7 +106,7 @@ class SheetEngine(RaceEngine):
         self.calcMicroSector(session, micro_sector, micro_sector_dict)
       
       for entry in self.entry_list_:
-        if self.isRetired(entry.number):
+        if entry.isRetired():
           continue
         sector_time = sum(micro_sector_dict.get(entry.number))
         #print("#" + entry.number + " " + utils.secToTimeStr(sector_time))
@@ -115,7 +115,7 @@ class SheetEngine(RaceEngine):
         sector_dict[entry.number] = old_sector_list
 
     for entry in self.entry_list_:
-      if self.isRetired(entry.number):
+      if entry.isRetired():
           continue
       laps_done = len(self.lap_dict_.get(entry.number))
       set_lap = False
@@ -134,7 +134,7 @@ class SheetEngine(RaceEngine):
 
   def calcMicroSector(self, session :SessionType, micro_sector :MicroSector, micro_sector_dict: dict):
     for entry in self.entry_list_:
-      if self.isRetired(entry.number):
+      if entry.isRetired():
           continue
       driver_pace = 0
       tyre_grip = 0
@@ -181,7 +181,9 @@ class SheetEngine(RaceEngine):
       time += randint(-self.options_.random_range_ * driver_consistency, self.options_.random_range_ * driver_consistency) / 1000
       mistake_time = self.checkMistakes(session, entry, micro_sector)
       if mistake_time == FLOAT_MAX:
-        self.retired.append(entry.number)
+        self.addLogEntry(entry.drivers[entry.current_driver].name + " retired ", LogEventType.retirement)
+        entry.setRetired()
+
       
       time += mistake_time
 
