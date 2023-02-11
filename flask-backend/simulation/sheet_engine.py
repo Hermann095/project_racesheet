@@ -93,6 +93,35 @@ class SheetEngine(RaceEngine):
     for entry in self.entry_list_:
       sector_dict[entry.number] = []
 
+    for entry in self.entry_list_:
+      match entry.state:
+        case EntryState.InLap:
+          self.addLogEntry(entry.drivers[entry.current_driver].name + " comes back to the garage." , LogDetailLevel.high)
+          entry.state = EntryState.Garage
+          continue
+        case EntryState.OutLap:
+          self.addLogEntry(entry.drivers[entry.current_driver].name + " starts fast lap." , LogDetailLevel.high)
+          entry.state = EntryState.Running
+          continue
+        case EntryState.Running:
+          self.addLogEntry(entry.drivers[entry.current_driver].name + " starts in lap." , LogDetailLevel.high)
+          entry.state = EntryState.InLap
+          continue
+        case EntryState.Garage:
+          pass
+        case _:
+          continue
+      
+      laps_done = len(self.lap_dict_.get(entry.number))
+      
+      if laps_done < self.options_.allowed_quali_laps:
+        if (total_ticks - current_tick) <= (self.options_.allowed_quali_laps - laps_done):
+          self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
+          entry.state = EntryState.OutLap
+        elif randint(0, 100) < 10:
+          self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
+          entry.state = EntryState.OutLap
+    
     for sector in self.track_.sectors:
       if not sector.microsector_timing:
         micro_sector_time = sector.time / len(sector.micro_sectors)
@@ -106,7 +135,7 @@ class SheetEngine(RaceEngine):
         self.calcMicroSector(session, micro_sector, micro_sector_dict)
       
       for entry in self.entry_list_:
-        if entry.isRetired():
+        if entry.state != EntryState.Running:
           continue
         sector_time = sum(micro_sector_dict.get(entry.number))
         #print("#" + entry.number + " " + utils.secToTimeStr(sector_time))
@@ -114,18 +143,9 @@ class SheetEngine(RaceEngine):
         old_sector_list.append(SectorTime(sector_time))
         sector_dict[entry.number] = old_sector_list
 
+    
     for entry in self.entry_list_:
-      if entry.isRetired():
-          continue
-      laps_done = len(self.lap_dict_.get(entry.number))
-      set_lap = False
-      if laps_done < self.options_.allowed_quali_laps:
-        if (total_ticks - current_tick) <= (self.options_.allowed_quali_laps - laps_done):
-          set_lap = True
-        elif randint(0, 100) < 10:
-          set_lap = True
-
-      if set_lap:
+      if entry.state == EntryState.Running:
         sector_list = sector_dict.get(entry.number)
         lap_time = sum(x.time for x in sector_list)
         self.recordLap(entry, Lap(entry, lap_time, sector_list))
@@ -134,8 +154,10 @@ class SheetEngine(RaceEngine):
 
   def calcMicroSector(self, session :SessionType, micro_sector :MicroSector, micro_sector_dict: dict):
     for entry in self.entry_list_:
-      if entry.isRetired():
-          continue
+      
+      if entry.state != EntryState.Running:
+        continue
+
       driver_pace = 0
       tyre_grip = 0
       engine_power = 0
