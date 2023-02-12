@@ -27,8 +27,15 @@ class Track():
   qualy_spread :int
   race_spread :int
   sectors :list[Sector] = field(default_factory=list)
+  lap_time : float = field(init=False)
+  step_distance : float = field(init=False)
+  
 
-  def lap_time(self) -> float:
+  def __post_init__(self):
+    self.lap_time = self.calclapTime()
+    self.step_distance = self.calcStepDistance()
+
+  def calclapTime(self) -> float:
     lap_total = 0
     for sector in self.sectors:
       if not sector.microsector_timing:
@@ -37,3 +44,7 @@ class Track():
         for micro_sector in sector.micro_sectors:
           lap_total += micro_sector.time
     return lap_total
+
+  def calcStepDistance(self, stepSize: int) -> float:
+    return stepSize / self.lap_time()
+    
