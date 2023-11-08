@@ -1,12 +1,10 @@
-import math
 from random import randint
 from .race_engine import RaceEngine
-from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime, SectorTimeState
-from .track import MicroSector, Track
-from .race_entry import RaceEntry, EntryState, EntryTrackState
+from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime
+from .models.track import MicroSector
+from .models.race_entry import RaceEntry, EntryState
 import simulation.utils as utils
 from flask_socketio import SocketIO, emit
-import time
 import jsonpickle
 from typing import Callable
 
@@ -91,7 +89,8 @@ class SheetEngine(RaceEngine):
         continue
       
 
-      self.calcTimeStep(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+      #self.calcTimeStep(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+      self.calcLap(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
       self.record_fastest_lap() 
       results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
       self.socket.emit("update_qualifying_results", jsonpickle.encode(results, unpicklable=False))

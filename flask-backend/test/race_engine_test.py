@@ -1,14 +1,14 @@
 import pytest
 
-from simulation.tyres import Tyres
-from simulation.driver import Driver
-from simulation.engine import Engine
-from simulation.chassis import Chassis
-from simulation.race_entry import RaceEntry
+from simulation.models.tyres import Tyres
+from simulation.models.driver import Driver
+from simulation.models.engine import Engine
+from simulation.models.chassis import Chassis
+from simulation.models.race_entry import RaceEntry
 
 from simulation.race_engine import RaceEngine
 from simulation.session import LogEntry, LogEventType, LogDetailLevel
-from simulation.track import Track, Sector, MicroSector
+from simulation.models.track import Track, Sector, MicroSector
 
 @pytest.fixture
 def log_entry():

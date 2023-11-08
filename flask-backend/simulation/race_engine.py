@@ -1,8 +1,8 @@
 from copy import copy, deepcopy
 from time import time
 
-from .race_entry import RaceEntry, EntryState
-import simulation.track as track
+from .models.race_entry import RaceEntry
+import simulation.models.track as track
 import simulation.session as session
 import simulation.utils as utils
 

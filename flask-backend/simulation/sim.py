@@ -1,19 +1,18 @@
-from .chassis import Chassis
-from .driver import Driver
-from .engine import Engine
+from .models.chassis import Chassis
+from .models.driver import Driver
+from .models.engine import Engine
 import simulation.race_manager as race_manager
 from .session import SessionType, SessionResult
-from .track import Track
-from .race_entry import RaceEntry
-from .tyres import Tyres
-import simulation.utils as utils
+from .models.race_entry import RaceEntry
+from .models.tyres import Tyres
+from .enums.enums import SimulationState
 import jsonpickle
 import numbers
 
 from flask_socketio import SocketIO
 
 
-state = utils.SimulationState.Running
+state = SimulationState.Running
 simSpeed = 1
 
 def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: float = 1.0):
@@ -21,20 +20,20 @@ def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: floa
     global simSpeed
     global state
     simSpeed = baseSimSpeed
-    state = utils.SimulationState.Running
+    state = SimulationState.Running
     
     @socket.on("pause_qualifying")
     def pause_qualifying():
         print("recieved pause_qualifying")
         global state
-        state = utils.SimulationState.Paused
+        state = SimulationState.Paused
 
     @socket.on("resume_qualifying")
     def resume_qualifying(json):
         print("recieved resume_qualifying with " + str(json))
 
         global state
-        if state == utils.SimulationState.Cancelled:
+        if state == SimulationState.Cancelled:
             print("session was already cancelled")
             return
 
@@ -44,15 +43,15 @@ def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: floa
             if isinstance(newSimSpeed, numbers.Number):
                 simSpeed = newSimSpeed
 
-        state = utils.SimulationState.Running
+        state = SimulationState.Running
 
     @socket.on("cancel_qualifying")
     def cancel_qualifying():
         print("recieved cancel_qualifying")
         global state
-        state = utils.SimulationState.Cancelled
+        state = SimulationState.Cancelled
     
-    def getState() -> utils.SimulationState:
+    def getState() -> SimulationState:
         global state
         return state
 
@@ -84,6 +83,6 @@ def buildResults(result: SessionResult):
 def disconnectionHandler():
     print("called disconnectionHandler")
     global state
-    state = utils.SimulationState.Cancelled
+    state = SimulationState.Cancelled
 
 

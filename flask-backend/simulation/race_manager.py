@@ -1,7 +1,7 @@
 from .race_engine import RaceEngine
 from .sheet_engine import SheetEngine
 import simulation.session as session
-import simulation.track as track
+import simulation.models.track as track
 
 from flask_socketio import SocketIO
 from typing import Callable
