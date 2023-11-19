@@ -3,6 +3,7 @@
   "description": "This is a boilerplate build with Vite, React 18, TypeScript, Vitest, Testing Library, TailwindCSS 3, Eslint and Prettier.",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://127.0.0.1:5000/",
   "author": {
     "name": "João Paulo Moraes",
     "email": "joaopaulomoraes@outlook.com",
@@ -22,8 +23,16 @@
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.18",
+    "@mui/material": "^5.14.18",
+    "@types/react-window": "^1.8.8",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.19.0",
+    "react-window": "^1.8.9",
+    "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.4",
