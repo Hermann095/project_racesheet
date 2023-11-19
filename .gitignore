@@ -2,6 +2,8 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=react,python
 
 .vscode
+.github
+.vitest
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
