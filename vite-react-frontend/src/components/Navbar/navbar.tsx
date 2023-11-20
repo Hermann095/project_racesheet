@@ -26,6 +26,8 @@ interface NavbarProbs {
   darkMode: boolean
 }
 
+//TODO: change to shadcn
+
 function Navbar({ toggleColorMode, darkMode }: NavbarProbs) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(

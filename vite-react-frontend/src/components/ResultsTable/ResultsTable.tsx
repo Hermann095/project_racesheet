@@ -16,6 +16,8 @@ import {
   ResultsTableSectorsHead
 } from './ResultsTableSectors'
 
+//TODO: change to shadcn
+
 export default function ResultsTable(props: ResultsTableProbs) {
   const showSectorBars = props.showSectorBars
   const showEntryIcons = props.showEntryIcons

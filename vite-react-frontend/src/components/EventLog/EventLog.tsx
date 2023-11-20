@@ -13,6 +13,8 @@ import {
 import { FormControl, FormLabel, Grid, Slider } from '@mui/material'
 import { red, orange, green, yellow, purple } from '@mui/material/colors'
 
+//TODO: change to shadcn
+
 function renderRow(props: ListChildComponentProps) {
   const { data, index, style } = props
 

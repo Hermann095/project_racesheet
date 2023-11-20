@@ -12,6 +12,8 @@ function SectorCell({ cellClass }: SectorCellProbs) {
   return <span className={cellClass}></span>
 }
 
+//TODO: change to shadcn
+
 export function ResultsTableSectorsHead(props: ResultsTableSectorsProbs) {
   const showSectorBars =
     props.showSectorBars === undefined ? false : props.showSectorBars
