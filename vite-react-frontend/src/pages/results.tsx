@@ -39,7 +39,8 @@ export default function ResultsPage(props: any) {
   const [simSpeed, setSimSpeed] = useState(1)
 
   useEffect(() => {
-    const socket = io('/websocket/', {
+    //const socket = io('ws://127.0.0.1:5000/')
+    const socket = io('http://127.0.0.1:5000', {
       transports: ['websocket']
     })
 
@@ -85,12 +86,16 @@ export default function ResultsPage(props: any) {
   }, [])
 
   useEffect(() => {
-    fetch('(/api/carset')
+    fetch('/api/carset')
       .then((res) => res.json())
       .then((data) => {
         setCarsetName(data.name)
       })
   }, [])
+
+  useEffect(() => {
+    console.log(carsetName)
+  }, [carsetName])
 
   useEffect(() => {
     if (simState === SimState.Running) {

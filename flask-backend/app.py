@@ -10,7 +10,7 @@ import numbers
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 CORS(app, resources={r"/*":{"origins":"*"}})
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, path="/socket.io", cors_allowed_origins="*")
 
 mode = "dev"
 
@@ -44,16 +44,16 @@ def css(folder,file):
         return
 
 
-@app.route("/drivers", methods=["GET"])
+@app.route("/api/drivers", methods=["GET"])
 def get_drivers():
     return {"drivers": [{"name": "Gerhard Berger", "nationality": "AUT"}, {"name": "Niki Lauda", "nationality": "AUT"}, {"name": "Mauricio Gugelmin", "nationality": "BRA"}]}
 
-@app.route("/qualifying")
+@app.route("/api/qualifying")
 def run_qualifying():
     result = startTestQualifying(False, socketio)
     return result
 
-@app.route("/carset")
+@app.route("/api/carset")
 def get_carset_path():
     #dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../carsets/test123/"))
     #carset_path = Path(dir_path)
@@ -65,13 +65,13 @@ def get_carset_path():
 def connected():
     print(request.sid)
     print("client connected")
-    emit("connect",{"data":f"id: {request.sid} is connected"})
+    emit("new_connection",{"data":f"id: {request.sid} is connected"})
 
 @socketio.on("disconnect")
 def disconnected():
     disconnectionHandler()
     print("client disconnected")
-    emit("disconnect",f"user {request.sid} disconnected",broadcast=True)
+    emit("client_disconnect",f"user {request.sid} disconnected",broadcast=True)
 
 @socketio.on("run_qualifying")
 def run_ws_qualifying(json):

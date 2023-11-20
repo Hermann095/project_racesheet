@@ -1,7 +1,7 @@
 import React from 'react'
 import Container from '@mui/material/Container'
 
-export default function StandingsPage(props) {
+export default function StandingsPage() {
   return (
     <>
       <Container>
