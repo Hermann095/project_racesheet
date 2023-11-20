@@ -1,4 +1,4 @@
-import App from 'components/App/App'
+import App from './components/App/App'
 import { createRoot } from 'react-dom/client'
 import 'tailwindcss/tailwind.css'
 
