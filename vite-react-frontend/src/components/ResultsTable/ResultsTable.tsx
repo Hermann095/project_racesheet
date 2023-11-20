@@ -92,7 +92,7 @@ export default function ResultsTable(props: ResultsTableProbs) {
               <TableCell align="center">
                 <img
                   className="flag-icon"
-                  src={process.env.PUBLIC_URL + '/flags/' + row?.nationality}
+                  src={process.env.PUBLIC_URL + '/flags/' + row?.nationality} //FIXME: fix issues
                   alt={'flag_' + row?.nationality}
                 ></img>
               </TableCell>
