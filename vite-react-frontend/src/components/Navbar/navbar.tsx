@@ -21,7 +21,12 @@ const pages = [
 ]
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 
-function Navbar(props: any) {
+interface NavbarProbs {
+  toggleColorMode: () => void
+  darkMode: boolean
+}
+
+function Navbar({ toggleColorMode, darkMode }: NavbarProbs) {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -166,8 +171,8 @@ function Navbar(props: any) {
               ))}
               <MenuItem key={'colorToggle'}>
                 <ColorModeToggle
-                  toggleColorMode={props.toggleColorMode}
-                  darkMode={props.darkMode}
+                  toggleColorMode={toggleColorMode}
+                  darkMode={darkMode}
                 ></ColorModeToggle>
               </MenuItem>
             </Menu>

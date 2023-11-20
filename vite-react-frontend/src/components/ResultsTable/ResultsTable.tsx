@@ -142,10 +142,12 @@ export default function ResultsTable(props: ResultsTableProbs) {
   )
 }
 
-function ColorCell(props: any) {
+interface ColorCellPropbs {
+  cellColor: string
+}
+
+function ColorCell({ cellColor }: ColorCellPropbs) {
   return (
-    <span
-      style={{ '--cell-color': props.cellColor } as React.CSSProperties}
-    ></span>
+    <span style={{ '--cell-color': cellColor } as React.CSSProperties}></span>
   )
 }

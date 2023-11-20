@@ -50,17 +50,25 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   }
 }))
 
-export default function ColorModeToggle(props: any) {
+interface ColorModeToggleProbs {
+  toggleColorMode: () => void
+  darkMode: boolean
+}
+
+export default function ColorModeToggle({
+  toggleColorMode,
+  darkMode
+}: ColorModeToggleProbs) {
   return (
     <FormControlLabel
       control={
         <MaterialUISwitch
           sx={{ m: 1 }}
-          checked={props.darkMode}
-          onChange={props.toggleColorMode}
+          checked={darkMode}
+          onChange={toggleColorMode}
         />
       }
-      label={props.darkMode ? 'Dark Mode' : 'Light Mode'}
+      label={darkMode ? 'Dark Mode' : 'Light Mode'}
     />
   )
 }

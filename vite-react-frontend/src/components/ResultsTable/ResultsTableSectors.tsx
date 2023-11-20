@@ -4,8 +4,12 @@ import { ResultsTableSectorsProbs } from '../../types/types'
 
 import '../ResultsTable/ResultsTable.css'
 
-function SectorCell(props: any) {
-  return <span className={props.cellClass}></span>
+interface SectorCellProbs {
+  cellClass: string
+}
+
+function SectorCell({ cellClass }: SectorCellProbs) {
+  return <span className={cellClass}></span>
 }
 
 export function ResultsTableSectorsHead(props: ResultsTableSectorsProbs) {
