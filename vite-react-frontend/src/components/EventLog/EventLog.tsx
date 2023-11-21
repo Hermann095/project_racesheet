@@ -1,77 +1,18 @@
 import * as React from 'react'
-import Box from '@mui/material/Box'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemText from '@mui/material/ListItemText'
-import { FixedSizeList, ListChildComponentProps } from 'react-window'
 import {
   EventLogProbs,
   LogItem,
   LogDetailLevel,
   LogType
 } from '../../types/types'
-import { FormControl, FormLabel, Grid, Slider } from '@mui/material'
-import { red, orange, green, yellow, purple } from '@mui/material/colors'
-
-//TODO: change to shadcn
-
-function renderRow(props: ListChildComponentProps) {
-  const { data, index, style } = props
-
-  let styleItem = {}
-
-  switch (data[index].type) {
-    case LogType.Crash:
-      styleItem = { backgroundColor: orange[900] }
-      break
-    case LogType.Retirement:
-      styleItem = { color: red[900] }
-      break
-    case LogType.NewLeader:
-      styleItem = { color: green[900] }
-      break
-    case LogType.YellowFlag:
-      styleItem = { backgroundColor: yellow[800] }
-      break
-    case LogType.RedFlag:
-      styleItem = { backgroundColor: red[900] }
-      break
-    case LogType.PurpleSector:
-      styleItem = { color: purple[900] }
-      break
-    case LogType.FastestLap:
-      styleItem = { backgroundColor: purple[500] }
-      break
-    case LogType.PersonalBest:
-      styleItem = { backgroundColor: green[900] }
-      break
-    case LogType.Mistake:
-      styleItem = { color: orange[900] }
-      break
-    default:
-      styleItem = {}
-      break
-  }
-
-  return (
-    <ListItem
-      style={style}
-      key={index}
-      component="div"
-      disablePadding
-      sx={styleItem}
-    >
-      <ListItemButton>
-        <ListItemText primary={data[index]?.text} />
-      </ListItemButton>
-    </ListItem>
-  )
-}
+import { ScrollArea } from '../ui/scroll-area'
+import { Separator } from '../ui/separator'
+import { cn } from '@/lib/utils'
+import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+import { SignalHigh, SignalLow, SignalMedium } from 'lucide-react'
 
 export default function EventLog(props: EventLogProbs) {
   const [detailLevel, setDetailLevel] = React.useState('high')
-
-  let numItems = props.events?.length
 
   function filterEvents() {
     let events = []
@@ -92,71 +33,149 @@ export default function EventLog(props: EventLogProbs) {
       )
     }
 
-    numItems = events?.length
     return events
   }
 
-  const marks = [
+  const handleDetailChange = (value: string) => {
+    setDetailLevel(value)
+  }
+
+  const detailSteps: EventLogToggleItem[] = [
     {
-      value: 0,
-      label: 'Low'
+      value: 'low',
+      icon: <SignalLow></SignalLow>
     },
     {
-      value: 50,
-      label: 'Medium'
+      value: 'medium',
+      icon: <SignalMedium></SignalMedium>
     },
     {
-      value: 100,
-      label: 'High'
+      value: 'high',
+      icon: <SignalHigh></SignalHigh>
     }
   ]
 
-  const handleDetailChange = (event: any, value: any) => {
-    const index = marks.findIndex((mark) => mark.value === value)
-    setDetailLevel(marks[index].label.toLocaleLowerCase())
-  }
+  return (
+    <div className="bg-background mt-2 h-[350px] w-full">
+      <div className="mb-2 flex justify-end">
+        <EventLogDetailSelector
+          label="Log Detail"
+          steps={detailSteps}
+          onChange={handleDetailChange}
+          defaultValue={detailLevel}
+        />
+      </div>
+      <EventLogList items={filterEvents()}></EventLogList>
+    </div>
+  )
+}
 
-  function valueLabelFormat(value: number) {
-    const index = marks.findIndex((mark) => mark.value === value)
-    return marks[index].label
+interface EventLogItemProps extends React.ComponentPropsWithoutRef<'div'> {
+  item: LogItem
+}
+
+function EventLogItem({ item, ...props }: EventLogItemProps) {
+  let itemStyle = ''
+
+  switch (item.type) {
+    case LogType.Crash:
+      itemStyle = 'bg-orange-900'
+      break
+    case LogType.Retirement:
+      itemStyle = 'text-red-900'
+      break
+    case LogType.NewLeader:
+      itemStyle = 'text-green-900'
+      break
+    case LogType.YellowFlag:
+      itemStyle = 'text-yellow-800'
+      break
+    case LogType.RedFlag:
+      itemStyle = 'bg-red-900'
+      break
+    case LogType.PurpleSector:
+      itemStyle = 'text-purple-900'
+      break
+    case LogType.FastestLap:
+      itemStyle = 'bg-purple-500'
+      break
+    case LogType.PersonalBest:
+      itemStyle = 'bg-green-900'
+      break
+    case LogType.Mistake:
+      itemStyle = 'text-orange-600'
+      break
+    default:
+      itemStyle = ''
+      break
   }
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: 360,
-        bgcolor: 'background.paper',
-        marginTop: '10px'
-      }}
-    >
-      <Grid
-        display={'flex'}
-        justifyContent={'end'}
-        sx={{ marginBottom: '10px' }}
+    <>
+      <div
+        className={cn('bg-background flex h-12 items-center px-4', itemStyle)}
+        key={props.key}
       >
-        <FormControl>
-          <FormLabel sx={{ display: 'inline' }}>Log detail Level</FormLabel>
-          <Slider
-            defaultValue={100}
-            valueLabelFormat={valueLabelFormat}
-            valueLabelDisplay="auto"
-            step={null}
-            marks={marks}
-            onChange={handleDetailChange}
-          />
-        </FormControl>
-      </Grid>
-      <FixedSizeList
-        height={280}
-        width={'100%'}
-        itemSize={46}
-        itemData={filterEvents()}
-        itemCount={numItems}
-        overscanCount={5}
+        <p>{item.text}</p>
+      </div>
+      <Separator clasName="my-2"></Separator>
+    </>
+  )
+}
+
+interface EventLogListProps {
+  items: LogItem[]
+}
+
+function EventLogList({ items }: EventLogListProps) {
+  return (
+    <ScrollArea className="h-[280px] w-full rounded-md">
+      {items?.map((item, index) => (
+        <EventLogItem item={item} key={index}></EventLogItem>
+      ))}
+    </ScrollArea>
+  )
+}
+
+interface EventLogToggleItem {
+  value: string
+  icon: React.ReactNode
+  ariaLabel?: string
+}
+
+interface EventLogDetailSelctorProps {
+  label: string
+  steps: EventLogToggleItem[]
+  defaultValue?: string
+  onChange?: (value: string) => void
+}
+
+function EventLogDetailSelector({
+  label,
+  steps,
+  defaultValue,
+  onChange
+}: EventLogDetailSelctorProps) {
+  return (
+    <div className="flex flex-col justify-center">
+      <p className="text-center">{label}</p>
+      <ToggleGroup
+        type="single"
+        onValueChange={onChange}
+        defaultValue={defaultValue}
       >
-        {renderRow}
-      </FixedSizeList>
-    </Box>
+        {steps.map((item, index) => (
+          <ToggleGroupItem
+            key={index}
+            value={item.value}
+            aria-label={
+              item.ariaLabel !== undefined ? item.ariaLabel : item.value
+            }
+          >
+            {item.icon}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
+    </div>
   )
 }
