@@ -7,19 +7,9 @@ import Container from '@mui/material/Container'
 import { DriverResults, SimState } from '../types/types'
 import ResultsTable from '../components/ResultsTable/ResultsTable'
 import EventLog from '../components/EventLog/EventLog'
-import {
-  Button,
-  CircularProgress,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  Stack,
-  Switch,
-  FormControl,
-  FormLabel,
-  Slider
-} from '@mui/material'
+
 import { convertSessionResultsToDriverResults } from '../utils/utils'
+import ResultsTopControls from '@/components/ResultsTopControls/ResultsTopControls'
 
 //TODO: change to shadcn
 
@@ -31,14 +21,14 @@ export default function ResultsPage(props: any) {
 
   const [carsetName, setCarsetName] = useState('')
 
-  const [showSectorBars, setShowSectorBars] = useState(false)
-  const [showEntryIcons, setShowEntryIcons] = useState(false)
-  const [showTheoreticalBest, setShowTheoreticalBest] = useState(false)
+  const [showSectorBars, setShowSectorBars] = useState<boolean>(false)
+  const [showEntryIcons, setShowEntryIcons] = useState<boolean>(false)
+  const [showTheoreticalBest, setShowTheoreticalBest] = useState<boolean>(false)
 
   const [isPaused, setIsPaused] = useState(false)
-  const [simState, setSimState] = useState(SimState.Ready)
+  const [simState, setSimState] = useState<SimState>(SimState.Ready)
 
-  const [simSpeed, setSimSpeed] = useState(1)
+  const [simSpeed, setSimSpeed] = useState<number>(1)
 
   useEffect(() => {
     //const socket = io('ws://127.0.0.1:5000/')
@@ -123,153 +113,34 @@ export default function ResultsPage(props: any) {
     socketInstance?.emit('pause_qualifying')
   }
 
-  function handleSectorBarChange(event: any, checked: boolean) {
+  function handleSectorBarChange(checked: boolean) {
     setShowSectorBars(checked)
   }
 
-  function handleEntryIconChange(event: any, checked: boolean) {
+  function handleEntryIconChange(checked: boolean) {
     setShowEntryIcons(checked)
   }
 
-  function handleTheoreticalBest(event: any, checked: boolean) {
+  function handleTheoreticalBest(checked: boolean) {
     setShowTheoreticalBest(checked)
-  }
-
-  const simSpeedMarks = [
-    {
-      value: 0,
-      label: 'Very Slow',
-      speed: 3
-    },
-    {
-      value: 25,
-      label: 'Slow',
-      speed: 2
-    },
-    {
-      value: 50,
-      label: 'Standard',
-      speed: 1
-    },
-    {
-      value: 75,
-      label: 'Fast',
-      speed: 0.5
-    },
-    {
-      value: 100,
-      label: 'Very Fast',
-      speed: 0.1
-    }
-  ]
-
-  const handleSimSpeedChange = (event: any, value: any) => {
-    const index = simSpeedMarks.findIndex((mark) => mark.value === value)
-    setSimSpeed(simSpeedMarks[index].speed)
-  }
-
-  function valueSimSpeedLabelFormat(value: number) {
-    const index = simSpeedMarks.findIndex((mark) => mark.value === value)
-    return simSpeedMarks[index].label
   }
 
   return (
     <>
       <Container maxWidth="xl">
-        <Grid container>
-          <Grid xs={6}>
-            <Stack>
-              <h1>{fetchedData?.session} Results</h1>
-              <Grid
-                container
-                display={'flex'}
-                alignItems={'center'}
-                columnSpacing={2}
-              >
-                <Grid item>
-                  <h3>{simState}</h3>
-                </Grid>
-                <Grid item>
-                  <CircularProgress
-                    variant="determinate"
-                    value={
-                      simState === 'Finished'
-                        ? 100
-                        : simState === 'Ready'
-                          ? 0
-                          : (fetchedData?.current_tick /
-                              fetchedData?.total_ticks) *
-                            100
-                    }
-                  />
-                </Grid>
-                <Grid item>
-                  <FormControl>
-                    <FormLabel sx={{ display: 'inline' }}>Sim Speed</FormLabel>
-                    <Slider
-                      defaultValue={50}
-                      valueLabelFormat={valueSimSpeedLabelFormat}
-                      valueLabelDisplay="auto"
-                      marks
-                      step={25}
-                      min={0}
-                      max={100}
-                      onChange={handleSimSpeedChange}
-                    />
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </Stack>
-          </Grid>
-          <Grid
-            xs={6}
-            display={'flex'}
-            alignItems={'center'}
-            justifyContent={'end'}
-          >
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    defaultChecked={showTheoreticalBest}
-                    onChange={handleTheoreticalBest}
-                  />
-                }
-                label="Theoretical Best"
-              />
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    defaultChecked={showEntryIcons}
-                    onChange={handleEntryIconChange}
-                  />
-                }
-                label="Entry Icons"
-              />
-            </FormGroup>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    defaultChecked={showSectorBars}
-                    onChange={handleSectorBarChange}
-                  />
-                }
-                label="Sector Bars"
-              />
-            </FormGroup>
-            <Stack>
-              <Button variant="contained" onClick={runQualifying}>
-                Start Qualifying
-              </Button>
-              <Button variant="contained" onClick={pauseQualifying}>
-                Pause Qualifying
-              </Button>
-            </Stack>
-          </Grid>
-        </Grid>
+        <ResultsTopControls
+          fetchedData={fetchedData}
+          simState={simState}
+          onSimSpeedChange={setSimSpeed}
+          showTheoreticalBest={showTheoreticalBest}
+          onTheoreticalBestChange={handleTheoreticalBest}
+          onShowEntryIconsState={handleEntryIconChange}
+          onShowSectorBarChange={handleSectorBarChange}
+          showEntryIcons={showEntryIcons}
+          showSectorBars={showSectorBars}
+          runQualifying={runQualifying}
+          pauseQualifying={pauseQualifying}
+        />
         <ResultsTable
           carsetName={carsetName}
           Results={resultData}
