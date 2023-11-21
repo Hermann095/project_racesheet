@@ -5,7 +5,7 @@ import TopNavigationMenu from '../TopNavigationMenu/TopNavigationMenu'
 export default function Navbar() {
   return (
     <>
-      <div className="fixed w-full border-b-2 border-muted bg-background">
+      <div className="border-muted bg-background sticky w-full border-b-2">
         <div className="flex justify-between">
           <div>
             <TopMenubar />

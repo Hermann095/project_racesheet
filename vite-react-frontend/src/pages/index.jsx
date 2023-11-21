@@ -1,14 +1,11 @@
 import React from 'react'
-import Container from '@mui/material/Container'
-
-//TODO: change to shadcn
 
 export default function HomePage() {
   return (
-    <>
-      <Container>
-        <h1 className="text-center mt-4">Home</h1>
-      </Container>
-    </>
+    <div className="bg-background container pt-8">
+      <div className="flex justify-center">
+        <h1 className="">Home</h1>
+      </div>
+    </div>
   )
 }
