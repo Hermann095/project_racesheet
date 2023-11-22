@@ -3,6 +3,7 @@ from .race_engine import RaceEngine
 from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime
 from .models.track import MicroSector
 from .models.race_entry import RaceEntry, EntryState
+from .enums.enums import SimulationState
 import simulation.utils as utils
 from flask_socketio import SocketIO, emit
 import jsonpickle
@@ -77,25 +78,25 @@ class SheetEngine(RaceEngine):
 
     while self.currentTime < self.sessionLengthTime:
       
-      if self.stateCallback() == utils.SimulationState.Cancelled:
+      if self.stateCallback() == SimulationState.Cancelled:
         self.socket.emit("cancelled_qualifying")
         results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
         return results
 
-      if self.stateCallback() == utils.SimulationState.Paused:
+      if self.stateCallback() == SimulationState.Paused:
         print("paused simulation...")
         self.socket.emit("paused_qualifying")
         self.socket.sleep(1)
         continue
       
 
-      #self.calcTimeStep(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
-      self.calcLap(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+      self.calcTimeStep(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+      #self.calcLap(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
       self.record_fastest_lap() 
       results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
       self.socket.emit("update_qualifying_results", jsonpickle.encode(results, unpicklable=False))
       self.socket.sleep(self.simSpeedCallback())
-      self.currentTime += 1
+      self.currentTime += self.options_.time_step
 
     self.record_fastest_lap() 
     results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)

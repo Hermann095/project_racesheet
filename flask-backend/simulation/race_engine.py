@@ -22,7 +22,7 @@ class RaceEngine():
     self.log = []
     self.fastest_lap : dict[str, session.Lap] = {}
     self.personal_best : dict[str, session.Lap] = {}
-    self.currentTime: int
+    self.currentTime: float
     self.sessionLengthTime: int
     self.sessionLengthLaps: int
 
