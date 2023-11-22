@@ -43,7 +43,7 @@ export default function StepInput({
         <Button variant={'outline'} size="sm" onClick={decrementIndex}>
           <Minus className="h-4 w-4"></Minus>
         </Button>
-        <div className="border border-input bg-background p-1 text-center">
+        <div className="border-input bg-background border p-1 text-center">
           {stepValues[index]}
         </div>
         <Button variant={'outline'} size="sm" onClick={incrementIndex}>

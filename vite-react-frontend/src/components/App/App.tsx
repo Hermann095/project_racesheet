@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
-import HomePage from '../../pages'
+import HomePage from '../../pages/index'
 import ResultsPage from '../../pages/results'
 import StandingsPage from '../../pages/standings'
 import Navbar from '../Navbar/Navbar'
@@ -15,7 +15,7 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route exact path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="/standings" element={<StandingsPage />} />
         </Routes>
