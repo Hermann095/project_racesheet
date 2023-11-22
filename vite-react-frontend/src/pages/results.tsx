@@ -2,16 +2,12 @@ import * as React from 'react'
 import { useEffect, useState } from 'react'
 import io, { Socket } from 'socket.io-client'
 
-import Container from '@mui/material/Container'
-
 import { DriverResults, SimState } from '../types/types'
 import ResultsTable from '../components/ResultsTable/ResultsTable'
 import EventLog from '../components/EventLog/EventLog'
 
 import { convertSessionResultsToDriverResults } from '../utils/utils'
 import ResultsTopControls from '@/components/ResultsTopControls/ResultsTopControls'
-
-//TODO: change to shadcn
 
 export default function ResultsPage(props: any) {
   const [socketInstance, setSocketInstance] = useState<Socket>()
@@ -126,30 +122,28 @@ export default function ResultsPage(props: any) {
   }
 
   return (
-    <>
-      <Container maxWidth="xl">
-        <ResultsTopControls
-          fetchedData={fetchedData}
-          simState={simState}
-          onSimSpeedChange={setSimSpeed}
-          showTheoreticalBest={showTheoreticalBest}
-          onTheoreticalBestChange={handleTheoreticalBest}
-          onShowEntryIconsState={handleEntryIconChange}
-          onShowSectorBarChange={handleSectorBarChange}
-          showEntryIcons={showEntryIcons}
-          showSectorBars={showSectorBars}
-          runQualifying={runQualifying}
-          pauseQualifying={pauseQualifying}
-        />
-        <ResultsTable
-          carsetName={carsetName}
-          Results={resultData}
-          showSectorBars={showSectorBars}
-          showEntryIcons={showEntryIcons}
-          showTheoreticalBest={showTheoreticalBest}
-        ></ResultsTable>
-        <EventLog events={fetchedData?.log}></EventLog>
-      </Container>
-    </>
+    <div className="container">
+      <ResultsTopControls
+        fetchedData={fetchedData}
+        simState={simState}
+        onSimSpeedChange={setSimSpeed}
+        showTheoreticalBest={showTheoreticalBest}
+        onTheoreticalBestChange={handleTheoreticalBest}
+        onShowEntryIconsState={handleEntryIconChange}
+        onShowSectorBarChange={handleSectorBarChange}
+        showEntryIcons={showEntryIcons}
+        showSectorBars={showSectorBars}
+        runQualifying={runQualifying}
+        pauseQualifying={pauseQualifying}
+      />
+      <ResultsTable
+        carsetName={carsetName}
+        Results={resultData}
+        showSectorBars={showSectorBars}
+        showEntryIcons={showEntryIcons}
+        showTheoreticalBest={showTheoreticalBest}
+      ></ResultsTable>
+      <EventLog events={fetchedData?.log}></EventLog>
+    </div>
   )
 }
