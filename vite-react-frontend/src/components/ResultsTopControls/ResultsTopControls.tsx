@@ -1,10 +1,12 @@
 import React from 'react'
 
-import { CircularProgress } from '@mui/material'
+//import { CircularProgress } from '@mui/material'
 import { SimState } from '@/types/types'
 import { Button } from '../ui/button'
 import SwitchWithLabel from '../SwitchWithLabel/SwitchWithLabel'
 import StepInput from '../StepInput/StepInput'
+import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
+import 'react-circular-progressbar/dist/styles.css'
 
 interface ResultsTopControlsProps {
   fetchedData: any
@@ -51,9 +53,8 @@ export default function ResultsTopControls({
             <div>
               <h3>{simState}</h3>
             </div>
-            <div>
-              <CircularProgress
-                variant="determinate"
+            <div className="h-14 w-14">
+              <CircularProgressbar
                 value={
                   simState === 'Finished'
                     ? 100
@@ -62,7 +63,13 @@ export default function ResultsTopControls({
                       : (fetchedData?.current_tick / fetchedData?.total_ticks) *
                         100
                 }
-              />
+                strokeWidth={50}
+                styles={buildStyles({
+                  strokeLinecap: 'butt',
+                  trailColor: 'rgb(41, 37, 36)',
+                  pathColor: 'rgb(234, 88, 12)'
+                })}
+              ></CircularProgressbar>
             </div>
             <div className="mb-2 flex items-center">
               <StepInput

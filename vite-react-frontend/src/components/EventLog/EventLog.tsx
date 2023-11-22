@@ -118,7 +118,7 @@ function EventLogItem({ item, ...props }: EventLogItemProps) {
       >
         <p>{item.text}</p>
       </div>
-      <Separator clasName="my-2"></Separator>
+      <Separator className="my-2"></Separator>
     </>
   )
 }
