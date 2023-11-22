@@ -1,8 +1,8 @@
 import * as React from 'react'
-import TableCell from '@mui/material/TableCell'
 import { ResultsTableSectorsProbs } from '../../types/types'
 
 import '../ResultsTable/ResultsTable.css'
+import { TableCell, TableHead } from '../ui/table'
 
 interface SectorCellProbs {
   cellClass: string
@@ -12,8 +12,6 @@ function SectorCell({ cellClass }: SectorCellProbs) {
   return <span className={cellClass}></span>
 }
 
-//TODO: change to shadcn
-
 export function ResultsTableSectorsHead(props: ResultsTableSectorsProbs) {
   const showSectorBars =
     props.showSectorBars === undefined ? false : props.showSectorBars
@@ -22,12 +20,12 @@ export function ResultsTableSectorsHead(props: ResultsTableSectorsProbs) {
   return (
     <>
       {showSectorBars ? (
-        <TableCell align="center">Sectors</TableCell>
+        <TableHead align="center">Sectors</TableHead>
       ) : (
         sectors?.map((sector, index) => (
-          <TableCell key={index} align="center">
+          <TableHead key={index} align="center">
             Sector {index + 1}
-          </TableCell>
+          </TableHead>
         ))
       )}
     </>
