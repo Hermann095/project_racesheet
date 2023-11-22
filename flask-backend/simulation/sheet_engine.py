@@ -1,12 +1,10 @@
-import math
 from random import randint
 from .race_engine import RaceEngine
-from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime, SectorTimeState
-from .track import MicroSector, Track
-from .race_entry import RaceEntry, EntryState
+from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime
+from .models.track import MicroSector
+from .models.race_entry import RaceEntry, EntryState
 import simulation.utils as utils
 from flask_socketio import SocketIO, emit
-import time
 import jsonpickle
 from typing import Callable
 
@@ -20,14 +18,17 @@ class SheetEngine(RaceEngine):
     self.socket = socket
     self.stateCallback : Callable = stateCallback
     self.simSpeedCallback : Callable = simSpeedCallback
-    self.initSession()
     if session == SessionType.Practice:
+      self.initSession(sessionLengthTime=5400)
       result = self.practice()
     elif session == SessionType.Pre_Qualifying:
+      self.initSession(sessionLengthTime=1800)
       result = self.pre_qualifying()
     elif session == SessionType.Qualifying:
+      self.initSession(sessionLengthTime=3600)
       result = self.qualifying()
     elif session == SessionType.Race:
+      self.initSession()
       result = self.race()
 
     return result
@@ -46,11 +47,10 @@ class SheetEngine(RaceEngine):
   def qualifying(self) -> SessionResult:
 
     self.hello_message(SessionType.Qualifying)
-    sessionLenght = 3600 #seconds
+    #sessionLenght = 3600 #seconds
     #numQualiLaps = 4
-    numPossibleLaps = math.ceil(sessionLenght / self.track_.lap_time())
-
-    for i in range(numPossibleLaps):
+    #numPossibleLaps = math.ceil(self.sessionLengthTime / self.track_.lap_time())
+    """for i in range(numPossibleLaps):
       while self.stateCallback() == utils.SimulationState.Paused:
         print("paused simulation...")
         self.socket.emit("paused_qualifying")
@@ -73,9 +73,33 @@ class SheetEngine(RaceEngine):
     
     #for entry in self.entry_list_:
     #  self.DEBUG_print_lap(self.lap_list_[self.position_dict_.get(entry.number)][0])
-    
-    return results 
+    """
 
+    while self.currentTime < self.sessionLengthTime:
+      
+      if self.stateCallback() == utils.SimulationState.Cancelled:
+        self.socket.emit("cancelled_qualifying")
+        results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+        return results
+
+      if self.stateCallback() == utils.SimulationState.Paused:
+        print("paused simulation...")
+        self.socket.emit("paused_qualifying")
+        self.socket.sleep(1)
+        continue
+      
+
+      #self.calcTimeStep(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+      self.calcLap(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+      self.record_fastest_lap() 
+      results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+      self.socket.emit("update_qualifying_results", jsonpickle.encode(results, unpicklable=False))
+      self.socket.sleep(self.simSpeedCallback())
+      self.currentTime += 1
+
+    self.record_fastest_lap() 
+    results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+    return results
 
 
   def race(self):
@@ -94,18 +118,18 @@ class SheetEngine(RaceEngine):
       sector_dict[entry.number] = []
 
     for entry in self.entry_list_:
-      match entry.state:
+      match entry.getState():
         case EntryState.InLap:
           self.addLogEntry(entry.drivers[entry.current_driver].name + " comes back to the garage." , LogDetailLevel.high)
-          entry.state = EntryState.Garage
+          entry.setState(EntryState.Garage)
           continue
         case EntryState.OutLap:
           self.addLogEntry(entry.drivers[entry.current_driver].name + " starts fast lap." , LogDetailLevel.high)
-          entry.state = EntryState.Running
+          entry.setState(EntryState.Running)
           continue
         case EntryState.Running:
           self.addLogEntry(entry.drivers[entry.current_driver].name + " starts in lap." , LogDetailLevel.high)
-          entry.state = EntryState.InLap
+          entry.setState(EntryState.InLap)
           continue
         case EntryState.Garage:
           pass
@@ -117,10 +141,10 @@ class SheetEngine(RaceEngine):
       if laps_done < self.options_.allowed_quali_laps:
         if (total_ticks - current_tick) <= (self.options_.allowed_quali_laps - laps_done):
           self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
-          entry.state = EntryState.OutLap
+          entry.setState(EntryState.OutLap)
         elif randint(0, 100) < 10:
           self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
-          entry.state = EntryState.OutLap
+          entry.setState(EntryState.OutLap)
     
     for sector in self.track_.sectors:
       if not sector.microsector_timing:
@@ -135,7 +159,7 @@ class SheetEngine(RaceEngine):
         self.calcMicroSector(session, micro_sector, micro_sector_dict)
       
       for entry in self.entry_list_:
-        if entry.state != EntryState.Running:
+        if entry.getState() != EntryState.Running:
           continue
         sector_time = sum(micro_sector_dict.get(entry.number))
         #print("#" + entry.number + " " + utils.secToTimeStr(sector_time))
@@ -145,7 +169,7 @@ class SheetEngine(RaceEngine):
 
     
     for entry in self.entry_list_:
-      if entry.state == EntryState.Running:
+      if entry.getState() == EntryState.Running:
         sector_list = sector_dict.get(entry.number)
         lap_time = sum(x.time for x in sector_list)
         self.recordLap(entry, Lap(entry, lap_time, sector_list))
@@ -155,7 +179,7 @@ class SheetEngine(RaceEngine):
   def calcMicroSector(self, session :SessionType, micro_sector :MicroSector, micro_sector_dict: dict):
     for entry in self.entry_list_:
       
-      if entry.state != EntryState.Running:
+      if entry.getState() != EntryState.Running:
         continue
 
       driver_pace = 0
@@ -278,5 +302,43 @@ class SheetEngine(RaceEngine):
         self.overall_time[entry.number] = FLOAT_MAX
         
 
+  def decideEntryOutLap(self):
+    for entry in self.entry_list_:
+      if entry.getState() != EntryState.Garage:
+        continue
+
+      laps_done = len(self.lap_dict_.get(entry.number))
+      remaining_time = self.currentTime - self.sessionLengthTime
+      predicted_time = self.track_.lap_time * 5
+      
+      if laps_done < self.options_.allowed_quali_laps:
+        if (remaining_time) <= (predicted_time * (self.options_.allowed_quali_laps - laps_done) + 30):
+          self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
+          entry.setState(EntryState.OutLap)
+        elif randint(0, 100) < 5:
+          self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
+          entry.setState(EntryState.OutLap)
+
+  def calcTimeStep(self, session :SessionType, current_tick: int, total_ticks: int, step_size: int = 1):
+    for sector_index, sector in enumerate(self.track_.sectors):
+      if sector_index == 0:
+        self.decideEntryOutLap()
+      if not sector.microsector_timing:
+        micro_sector_time = sector.time / len(sector.micro_sectors)
+      
+      for micro_sector_index, micro_sector in enumerate(sector.micro_sectors):
+        if not sector.microsector_timing:
+          micro_sector.time = micro_sector_time
+        
+
+        for entry in self.entry_list_:
+          if entry.state.current_sector is not sector_index or entry.state.current_microsector is not micro_sector_index:
+            continue
+          if entry.getState() is not EntryState.OutLap or entry.getState() is not EntryState.InLap:
+            pass
+          
+          if entry.getState() is not EntryState.Running or entry.getState() is not EntryState.OutLap or entry.getState() is not EntryState.InLap:
+            continue       
+          
 
   

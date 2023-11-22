@@ -1,8 +1,8 @@
 from copy import copy, deepcopy
 from time import time
 
-from .race_entry import RaceEntry, EntryState
-import simulation.track as track
+from .models.race_entry import RaceEntry
+import simulation.models.track as track
 import simulation.session as session
 import simulation.utils as utils
 
@@ -22,6 +22,9 @@ class RaceEngine():
     self.log = []
     self.fastest_lap : dict[str, session.Lap] = {}
     self.personal_best : dict[str, session.Lap] = {}
+    self.currentTime: int
+    self.sessionLengthTime: int
+    self.sessionLengthLaps: int
 
   def setTrack(self, track :track.Track):
     self.track_ = track
@@ -32,15 +35,16 @@ class RaceEngine():
   def startSession(self, session :session.SessionType, socket: SocketIO, stateCallback: Callable, simSpeedCallback: Callable) -> session.SessionResult:
     pass
 
-  def initSession(self):
+  def initSession(self, sessionLengthTime: int = 3600, sessionLengthLaps: int = 50):
     self.initLapDict()
     self.initPositionDict()
     self.initOverallTime()
     self.initFastestLapDict()
     self.initPersonalBestDict()
     self.log = []
-    #self.fastest_lap = dict()
-    #self.personal_best = dict()
+    self.currentTime = 0
+    self.sessionLengthTime = sessionLengthTime
+    self.sessionLengthLaps = sessionLengthLaps
 
   def initLapDict(self):
     lap_dict = dict()

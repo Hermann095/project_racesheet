@@ -2,51 +2,14 @@ from dataclasses import dataclass
 from dataclasses import field
 from json import JSONEncoder
 import json
-import enum
 import simulation.utils as utils
-from .race_entry import RaceEntry
-from .track import Track
+from .enums.enums import *
+from .models.race_entry import RaceEntry
+from .models.track import Track
+from .models.log_entry import LogEntry
+from .models.sector_time import SectorTime
+from .models.lap import Lap
 
-class SessionType(enum.Enum):
-  Practice = enum.auto()
-  Pre_Qualifying = enum.auto()
-  Qualifying = enum.auto()
-  Race = enum.auto()
-
-  def __getstate__(self):
-    return self._name_
-
-class LogDetailLevel(enum.Enum):
-  low = enum.auto()
-  medium = enum.auto()
-  high = enum.auto()
-
-  def __getstate__(self):
-    return self._name_
-
-class LogEventType(enum.Enum):
-  default = enum.auto()
-  crash = enum.auto()
-  retirement = enum.auto()
-  newLeader = enum.auto()
-  yellowFlag = enum.auto()
-  redFlag = enum.auto()
-  purpleSector = enum.auto()
-  fastestLap = enum.auto()
-  personalBest = enum.auto()
-  mistake = enum.auto()
-
-  def __getstate__(self):
-    return self._name_
-
-class SectorTimeState(enum.Enum):
-  yellow = enum.auto()
-  green = enum.auto()
-  purple = enum.auto()
-  white = enum.auto()
-
-  def __getstate__(self):
-    return self._name_
 
 class SessionOptions():
   def __init__(self, skill_range = 1000, min_weight = 505, drag_multiplier = 1, low_speed_mult = 0.25, high_speed_mult = 0.25, acceleration_mult = 0.25, top_speed_mult = 0.25, weight_factor = 0.3, tyre_factor = 0.5, driver_mult = 2, random_range = 200, allowed_quali_laps = 4) -> None:
@@ -63,38 +26,6 @@ class SessionOptions():
     self.random_range_ = random_range
     self.allowed_quali_laps = allowed_quali_laps
 
-@dataclass
-class SectorTime():
-  time: float = field(default=utils.FLOAT_MAX)
-  state: SectorTimeState = field(default=SectorTimeState.green)
-
-  def __getstate__(self):
-    return {
-      "time": utils.secToTimeStr(self.time),
-      "state": self.state
-    }
-
-@dataclass(order=True)
-class Lap():
-  sort_index: float = field(init=False)
-  entry :RaceEntry
-  time :float = field(default=utils.FLOAT_MAX)
-  sector_times :list[SectorTime] = field(default_factory=list)
-
-  def __post_init__(self):
-    self.sort_index = self.time
-
-  def __getstate__(self):
-    return {
-      "time": utils.secToTimeStr(self.time),
-      "sector_times": self.sector_times
-    }
-
-@dataclass
-class LogEntry():
-  text: str
-  detailLevel: LogDetailLevel
-  type: LogEventType
 
 class SessionResult():
   def __init__(self, session :SessionType, track: Track, entries :list[RaceEntry], time :list, notes :list, lap_times :dict[list[Lap]], fastest_lap :dict[Lap], 
