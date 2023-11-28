@@ -12,7 +12,7 @@ from .models.lap import Lap
 
 
 class SessionOptions():
-  def __init__(self, skill_range = 1000, min_weight = 505, drag_multiplier = 1, low_speed_mult = 0.25, high_speed_mult = 0.25, acceleration_mult = 0.25, top_speed_mult = 0.25, weight_factor = 0.3, tyre_factor = 0.5, driver_mult = 2, random_range = 200, allowed_quali_laps = 4, time_step = 1.0) -> None:
+  def __init__(self, skill_range = 1000, min_weight = 505, drag_multiplier = 1, low_speed_mult = 0.25, high_speed_mult = 0.25, acceleration_mult = 0.25, top_speed_mult = 0.25, weight_factor = 0.3, tyre_factor = 0.5, driver_mult = 2, random_range = 200, allowed_quali_laps = 4, time_step = 1.0, out_lap_mult = 2.0) -> None:
     self.skill_range_ = skill_range
     self.min_weight_ = min_weight
     self.drag_multiplier_ = drag_multiplier
@@ -26,6 +26,7 @@ class SessionOptions():
     self.random_range_ = random_range
     self.allowed_quali_laps = allowed_quali_laps
     self.time_step = time_step
+    self.out_lap_mult = out_lap_mult
 
 
 class SessionResult():

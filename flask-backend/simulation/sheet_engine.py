@@ -2,8 +2,9 @@ from random import randint
 from .race_engine import RaceEngine
 from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime
 from .models.track import MicroSector
-from .models.race_entry import RaceEntry, EntryState
+from .models.race_entry import RaceEntry
 from .enums.enums import SimulationState
+from .enums.enums import EntryState
 import simulation.utils as utils
 from flask_socketio import SocketIO, emit
 import jsonpickle
@@ -310,36 +311,38 @@ class SheetEngine(RaceEngine):
 
       laps_done = len(self.lap_dict_.get(entry.number))
       remaining_time = self.currentTime - self.sessionLengthTime
-      predicted_time = self.track_.lap_time * 5
+      predicted_time = self.track_.lap_time * self.options_.out_lap_mult
       
       if laps_done < self.options_.allowed_quali_laps:
         if (remaining_time) <= (predicted_time * (self.options_.allowed_quali_laps - laps_done) + 30):
           self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
-          entry.setState(EntryState.OutLap)
+          self.startNewLap(entry, EntryState.OutLap)
         elif randint(0, 100) < 5:
           self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
-          entry.setState(EntryState.OutLap)
+          self.startNewLap(entry, EntryState.OutLap)
 
-  def calcTimeStep(self, session :SessionType, current_tick: int, total_ticks: int, step_size: int = 1):
-    for sector_index, sector in enumerate(self.track_.sectors):
-      if sector_index == 0:
-        self.decideEntryOutLap()
-      if not sector.microsector_timing:
-        micro_sector_time = sector.time / len(sector.micro_sectors)
-      
-      for micro_sector_index, micro_sector in enumerate(sector.micro_sectors):
-        if not sector.microsector_timing:
-          micro_sector.time = micro_sector_time
+  def calcTimeStep(self, session :SessionType, step_size: int = 1):
+    self.decideEntryOutLap()
+
+    for entry in self.entry_list_:
+      if entry.getState() == EntryState.Garage:
+        continue
+      if entry.getState() == EntryState.InLap or entry.getState() == EntryState.OutLap:
+        current_sector_index = self.entry_track_state_dict[entry.number].current_sector
+        current_microsector_index = self.entry_track_state_dict[entry.number].current_microsector
+        current_microsector = self.track_.sectors[current_sector_index].micro_sectors[current_microsector_index]
         
+        if not self.track_.sectors[current_sector_index].microsector_distance:
+          added_distance = self.track_.sectors[current_sector_index].distance
+        else:
+          added_distance = current_microsector.distance
 
-        for entry in self.entry_list_:
-          if entry.state.current_sector is not sector_index or entry.state.current_microsector is not micro_sector_index:
-            continue
-          if entry.getState() is not EntryState.OutLap or entry.getState() is not EntryState.InLap:
-            pass
-          
-          if entry.getState() is not EntryState.Running or entry.getState() is not EntryState.OutLap or entry.getState() is not EntryState.InLap:
-            continue       
-          
+        added_distance = added_distance / self.options_.out_lap_mult * step_size
 
-  
+        target_distance = self.entry_track_state_dict[entry.number].lap_distance + added_distance
+        new_sector_indices = self.track_.allSectorIndexFromDistance(target_distance)
+
+        if new_sector_indices.sector != current_sector_index or new_sector_indices.micro_sector != current_microsector_index:
+          pass # TODO: add sector jump behaviour
+
+

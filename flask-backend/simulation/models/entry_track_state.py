@@ -20,4 +20,12 @@ class EntryTrackState():
         self.current_time += addedTime
         self.current_sector = newSector
         self.current_microsector = newMicroSector
-        self.currentLap = currentLap
+        self.current_lap = currentLap
+
+    def startNewLap(self, new_lap: Lap, state: EntryState):
+        self.state = state
+        self.current_lap = new_lap
+        self.lap_distance = 0.0
+        self.current_time = 0.0
+        self.current_sector = 0.0
+        self.current_microsector = 0.0

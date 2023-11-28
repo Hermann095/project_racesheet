@@ -2,6 +2,9 @@ from copy import copy, deepcopy
 from time import time
 
 from .models.race_entry import RaceEntry
+from .models.entry_track_state import EntryTrackState
+from .models.lap import Lap
+from .enums.enums import EntryState
 import simulation.models.track as track
 import simulation.session as session
 import simulation.utils as utils
@@ -25,6 +28,7 @@ class RaceEngine():
     self.currentTime: float
     self.sessionLengthTime: int
     self.sessionLengthLaps: int
+    self.entry_track_state_dict: dict[str, EntryTrackState]
 
   def setTrack(self, track :track.Track):
     self.track_ = track
@@ -41,6 +45,7 @@ class RaceEngine():
     self.initOverallTime()
     self.initFastestLapDict()
     self.initPersonalBestDict()
+    self.initEntryTrackStateDict()
     self.log = []
     self.currentTime = 0
     self.sessionLengthTime = sessionLengthTime
@@ -82,6 +87,13 @@ class RaceEngine():
       personal_best[entry.number] = session.Lap(entry, utils.FLOAT_MAX, sector_list)
 
     self.personal_best = personal_best
+
+  def initEntryTrackStateDict(self):
+    entry_track_state_dict = dict()
+    for entry in self.entry_list_:
+      entry_track_state_dict[entry.number] = EntryTrackState(entry, Lap(entry))
+
+    self.entry_track_state_dict = entry_track_state_dict
 
   def recordLap(self, entry :RaceEntry, lap :session.Lap):
 
@@ -133,6 +145,14 @@ class RaceEngine():
   def addLogEntry(self, message: str, detail_level: session.LogDetailLevel = session.LogDetailLevel.low, type: session.LogEventType = session.LogEventType.default):
     new_entry = session.LogEntry(message, detail_level, type)
     self.log.append(new_entry)
+
+  def startNewLap(self, entry: RaceEntry, state: EntryState):
+    entry.setState(state)
+    self.entry_track_state_dict[entry.number].startNewLap(Lap(entry), state)
+
+  def finishLap(self, entry: RaceEntry, state: EntryState):
+    self.recordLap(entry, self.entry_track_state_dict[entry.number].current_lap)
+    entry.setState(state)
 
   def DEBUG_print_lap(self, lap :session.Lap):
     driver_name = lap.entry.drivers[lap.entry.current_driver].name
