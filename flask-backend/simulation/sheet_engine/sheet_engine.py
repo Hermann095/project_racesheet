@@ -1,10 +1,10 @@
 from random import randint
-from .race_engine import RaceEngine
-from .session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime
-from .models.track import MicroSector
-from .models.race_entry import RaceEntry
-from .enums.enums import SimulationState
-from .enums.enums import EntryState
+from ..race_engine import RaceEngine
+from ..session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime
+from ..models.track import MicroSector
+from ..models.race_entry import RaceEntry
+from ..enums.enums import SimulationState
+from ..enums.enums import EntryState
 import simulation.utils as utils
 from flask_socketio import SocketIO, emit
 import jsonpickle

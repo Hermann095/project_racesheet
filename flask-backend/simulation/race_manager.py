@@ -1,5 +1,5 @@
 from .race_engine import RaceEngine
-from .sheet_engine import SheetEngine
+from .sheet_engine.sheet_engine import SheetEngine
 import simulation.session as session
 import simulation.models.track as track
 
