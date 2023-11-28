@@ -5,6 +5,7 @@ from ..models.track import MicroSector
 from ..models.race_entry import RaceEntry
 from ..enums.enums import SimulationState
 from ..enums.enums import EntryState
+import simulation.sheet_engine.lap_calculator as LapCalculator
 import simulation.utils as utils
 from flask_socketio import SocketIO, emit
 import jsonpickle
@@ -91,7 +92,7 @@ class SheetEngine(RaceEngine):
         continue
       
 
-      self.calcTimeStep(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
+      LapCalculator.calcTimeStep(self, SessionType.Qualifying)
       #self.calcLap(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
       self.record_fastest_lap() 
       results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
@@ -302,47 +303,5 @@ class SheetEngine(RaceEngine):
         self.overall_time[entry.number] = fastest_time
       except:
         self.overall_time[entry.number] = FLOAT_MAX
-        
-
-  def decideEntryOutLap(self):
-    for entry in self.entry_list_:
-      if entry.getState() != EntryState.Garage:
-        continue
-
-      laps_done = len(self.lap_dict_.get(entry.number))
-      remaining_time = self.currentTime - self.sessionLengthTime
-      predicted_time = self.track_.lap_time * self.options_.out_lap_mult
-      
-      if laps_done < self.options_.allowed_quali_laps:
-        if (remaining_time) <= (predicted_time * (self.options_.allowed_quali_laps - laps_done) + 30):
-          self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
-          self.startNewLap(entry, EntryState.OutLap)
-        elif randint(0, 100) < 5:
-          self.addLogEntry(entry.drivers[entry.current_driver].name + " starts out lap." , LogDetailLevel.high)
-          self.startNewLap(entry, EntryState.OutLap)
-
-  def calcTimeStep(self, session :SessionType, step_size: int = 1):
-    self.decideEntryOutLap()
-
-    for entry in self.entry_list_:
-      if entry.getState() == EntryState.Garage:
-        continue
-      if entry.getState() == EntryState.InLap or entry.getState() == EntryState.OutLap:
-        current_sector_index = self.entry_track_state_dict[entry.number].current_sector
-        current_microsector_index = self.entry_track_state_dict[entry.number].current_microsector
-        current_microsector = self.track_.sectors[current_sector_index].micro_sectors[current_microsector_index]
-        
-        if not self.track_.sectors[current_sector_index].microsector_distance:
-          added_distance = self.track_.sectors[current_sector_index].distance
-        else:
-          added_distance = current_microsector.distance
-
-        added_distance = added_distance / self.options_.out_lap_mult * step_size
-
-        target_distance = self.entry_track_state_dict[entry.number].lap_distance + added_distance
-        new_sector_indices = self.track_.allSectorIndexFromDistance(target_distance)
-
-        if new_sector_indices.sector != current_sector_index or new_sector_indices.micro_sector != current_microsector_index:
-          pass # TODO: add sector jump behaviour
 
 
