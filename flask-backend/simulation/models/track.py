@@ -52,13 +52,13 @@ class Track():
   def calcLapDistance(self) -> float:
     return self.calcDistanceToSectorStart(self, len(self.sectors) - 1)
 
-  def calcDistanceToSectorStart(self, sector_index: int) -> float:
+  def calcDistanceToSectorStart(self, sector_index: int, microsector_index: int) -> float:
     distance_total = 0.0
     for sector in self.sectors[:(sector_index + 1)]:
       if not sector.microsector_distance:
         distance_total += sector.distance
       else:
-        for micro_sector in sector.micro_sectors:
+        for micro_sector in sector.micro_sectors[:(microsector_index + 1)]:
           distance_total += micro_sector.distance
     return distance_total
 

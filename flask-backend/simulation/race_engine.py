@@ -114,6 +114,9 @@ class RaceEngine():
       else:
         lap.sector_times[index].state = session.SectorTimeState.yellow
 
+  def recordSector(self, entry: RaceEntry, total_lap_time: float, sector_index: int):
+      pass #TODO: add sector recording
+
   #
   # TODO: rewrite or delete, not working currently
   #
