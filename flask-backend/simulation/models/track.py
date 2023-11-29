@@ -50,16 +50,20 @@ class Track():
     return lap_total
 
   def calcLapDistance(self) -> float:
-    return self.calcDistanceToSectorStart(self, len(self.sectors) - 1)
+    return self.calcDistanceToSectorEnd(len(self.sectors) - 1)
 
-  def calcDistanceToSectorStart(self, sector_index: int, microsector_index: int) -> float:
+  def calcDistanceToSectorEnd(self, sector_index: int, micro_sector_index: int = 9999) -> float:
     distance_total = 0.0
-    for sector in self.sectors[:(sector_index + 1)]:
-      if not sector.microsector_distance:
-        distance_total += sector.distance
-      else:
-        for micro_sector in sector.micro_sectors[:(microsector_index + 1)]:
+    for s_index, sector in enumerate(self.sectors[:sector_index+1]):
+      if micro_sector_index == 9999:
+        micro_sector_index = len(sector.micro_sectors)
+      for m_index, micro_sector in enumerate(sector.micro_sectors):
+        if not sector.microsector_distance:
+          distance_total += (sector.distance / len(sector.micro_sectors))
+        else:
           distance_total += micro_sector.distance
+        if s_index == sector_index and m_index == micro_sector_index:
+          return distance_total
     return distance_total
 
   def sectorIndexFromDistance(self, distance: float) -> int:
@@ -86,7 +90,10 @@ class Track():
     sector_index = self.sectorIndexFromDistance(distance)
 
     micro_sector_index = 0
-    start_distance = distance - self.calcDistanceToSectorStart(sector_index)
+    if sector_index == 0:
+      start_distance = 0.0
+    else:
+      start_distance = self.calcDistanceToSectorEnd(sector_index - 1)
 
     micro_sector_distance = 0
     if not self.sectors[sector_index].microsector_distance:

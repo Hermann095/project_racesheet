@@ -1,4 +1,4 @@
-from .race_engine import RaceEngine
+from .race_engine.race_engine import RaceEngine
 from .sheet_engine.sheet_engine import SheetEngine
 import simulation.session as session
 import simulation.models.track as track
@@ -24,7 +24,7 @@ class RaceManager(metaclass=RaceManagerMeta):
   engine_ :RaceEngine = None
 
   def __init__(self):
-    self.engine_ = SheetEngine(track.Track("Test Track", "AUT", 1, 1, [track.Sector(90, True, [track.MicroSector(5, 5, 5, 5, 5, 15, "Micro_Sector 1"), track.MicroSector(5, 5, 5, 5, 5, 15)]), track.Sector(30, False, [track.MicroSector(5, 5, 5, 5, 5, 30, "Micro_Sector 3"), track.MicroSector(5, 5, 5, 5, 5, 30)]), track.Sector(90, True, [track.MicroSector(5, 5, 5, 5, 5, 15, "Micro_Sector 5"), track.MicroSector(5, 5, 5, 5, 5, 15, "Micro_Sector 6")])]), [])
+    self.engine_ = SheetEngine(track.Track("Test Track", "AUT", 1, 1, [track.Sector(90, 1000, True, False, [track.MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 1"), track.MicroSector(5, 5, 5, 5, 5, 15, 500)]), track.Sector(30, 1000, False, True, [track.MicroSector(5, 5, 5, 5, 5, 30, 500, "Micro_Sector 3"), track.MicroSector(5, 5, 5, 5, 5, 30, 500)]), track.Sector(90, 1000, True, True, [track.MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 5"), track.MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 6")])]), [])
 
   def setTrack(self, track :track.Track):
     self.engine_.setTrack(track)

@@ -16,13 +16,14 @@ class RaceEntry():
     chassis :Chassis
     engine :Engine
     tyres :Tyres
-    state :EntryState
+    state :EntryState = field(init=False)
     drivers :list[Driver] = field(default_factory=list)
     current_driver: int = 0
     
 
     def __post_init__(self):
         self.sort_index = self.number
+        self.state = EntryState.Garage
 
     def isRetired(self):
         return self.state == EntryState.Retired

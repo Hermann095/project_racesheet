@@ -67,7 +67,8 @@ def startTestQualifying(printResults: bool, socket: SocketIO, baseSimSpeed: floa
     entry_b2 = RaceEntry("96", "Team B", ["#1DDEA4", "#000000"], Chassis("Chassis B", "Team B", 1000, 1000, 100, 1000, 350, 1000), Engine("Engine B", 1000, 1000, 1000, 1000, 1000, 155, 1000), Tyres("Tyre B", 1000, 1000, 1000, 1000), [Driver("B2", "AUT", "Team B", 1000, 1000, 1000, 1000, 1000)])
     entry_c = RaceEntry("1", "Team C", ["#81C4FF", "#16588E", "#E7222E"], Chassis("Chassis C", "Team C", 100, 100, 1000, 100, 350, 100), Engine("Engine A", 100, 100, 100, 100, 100, 155, 100), Tyres("Tyre A", 100, 100, 100, 100), [Driver("Thomas Pitt Cholmondeley-Tapper", "NZL", "Team A", 100, 100, 100, 100, 100)])
     entry_c2 = RaceEntry("2", "Team C", ["#8b0000"], Chassis("Chassis C", "Team C", 100, 100, 1000, 100, 350, 100), Engine("Engine A", 100, 100, 100, 100, 100, 155, 100), Tyres("Tyre A", 100, 100, 100, 100), [Driver("c2", "USA", "Team A", 100, 100, 100, 100, 100)])
-    entry_list = [entry_a, entry_a2, entry_b, entry_b2, entry_c, entry_c2]
+    #entry_list = [entry_a, entry_a2, entry_b, entry_b2, entry_c, entry_c2]
+    entry_list = [entry_c, entry_c2, entry_a, entry_a2, entry_b, entry_b2]
     rm.setEntryList(entry_list)
     result = rm.startSession(SessionType.Qualifying, socket, getState, getSimSpeed)
     if printResults:

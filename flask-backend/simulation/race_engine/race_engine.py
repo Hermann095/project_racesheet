@@ -1,10 +1,11 @@
 from copy import copy, deepcopy
 from time import time
 
-from .models.race_entry import RaceEntry
-from .models.entry_track_state import EntryTrackState
-from .models.lap import Lap
-from .enums.enums import EntryState
+from ..models.race_entry import RaceEntry
+from ..models.entry_track_state import EntryTrackState
+from ..models.lap import Lap
+from ..models.sector_time import SectorTime
+from ..enums.enums import EntryState
 import simulation.models.track as track
 import simulation.session as session
 import simulation.utils as utils
@@ -98,7 +99,11 @@ class RaceEngine():
   def recordLap(self, entry :RaceEntry, lap :session.Lap):
 
     self.lap_dict_[entry.number].append(lap)
+    #TODO: remove debug
+    self.DEBUG_print_lap(lap)
 
+    #FIXME
+    """
     if len(self.lap_dict_.get(entry.number)) == 1:
       self.fastest_lap[entry.number] = lap
       self.addLogEntry(entry.drivers[entry.current_driver].name + " set a first lap of " + utils.secToTimeStr(lap.time))
@@ -113,9 +118,10 @@ class RaceEngine():
         self.personal_best.get(entry.number).sector_times[index] = lap.sector_times[index]
       else:
         lap.sector_times[index].state = session.SectorTimeState.yellow
-
-  def recordSector(self, entry: RaceEntry, total_lap_time: float, sector_index: int):
-      pass #TODO: add sector recording
+    """
+  def recordSector(self, entry: RaceEntry, sector_time: float):
+      #TODO: add sector recording
+      self.entry_track_state_dict[entry.number].current_lap.sector_times.append(SectorTime(sector_time))
 
   #
   # TODO: rewrite or delete, not working currently
@@ -148,12 +154,16 @@ class RaceEngine():
   def addLogEntry(self, message: str, detail_level: session.LogDetailLevel = session.LogDetailLevel.low, type: session.LogEventType = session.LogEventType.default):
     new_entry = session.LogEntry(message, detail_level, type)
     self.log.append(new_entry)
+    #TODO: remove DUBUG
+    print(message)
+
 
   def startNewLap(self, entry: RaceEntry, state: EntryState):
     entry.setState(state)
     self.entry_track_state_dict[entry.number].startNewLap(Lap(entry), state)
 
   def finishLap(self, entry: RaceEntry, state: EntryState):
+    self.entry_track_state_dict[entry.number].finishLap()
     self.recordLap(entry, self.entry_track_state_dict[entry.number].current_lap)
     entry.setState(state)
 
@@ -162,6 +172,6 @@ class RaceEngine():
     sector_string = ""
 
     for sector_time in lap.sector_times:
-      sector_string += ("  " + utils.secToTimeStr(sector_time))
+      sector_string += ("  " + utils.secToTimeStr(sector_time.time))
 
     print("Lap: " + driver_name + " | " + sector_string + " | " + utils.secToTimeStr(lap.time))

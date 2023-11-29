@@ -1,5 +1,5 @@
 from random import randint
-from ..race_engine import RaceEngine
+from ..race_engine.race_engine import RaceEngine
 from ..session import Lap, SessionResult, SessionType, LogDetailLevel, LogEventType, SectorTime
 from ..models.track import MicroSector
 from ..models.race_entry import RaceEntry
@@ -80,6 +80,8 @@ class SheetEngine(RaceEngine):
 
     while self.currentTime < self.sessionLengthTime:
       
+      #print("currentTime: " + str(self.currentTime) + " sessionLengthTime: " + str(self.sessionLengthTime))
+
       if self.stateCallback() == SimulationState.Cancelled:
         self.socket.emit("cancelled_qualifying")
         results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
@@ -97,7 +99,7 @@ class SheetEngine(RaceEngine):
       self.record_fastest_lap() 
       results = self.constructSessionResults(SessionType.Qualifying, self.currentTime, self.sessionLengthTime)
       self.socket.emit("update_qualifying_results", jsonpickle.encode(results, unpicklable=False))
-      self.socket.sleep(self.simSpeedCallback())
+      #self.socket.sleep(self.simSpeedCallback())
       self.currentTime += self.options_.time_step
 
     self.record_fastest_lap() 

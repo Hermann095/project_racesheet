@@ -6,7 +6,7 @@ from simulation.models.engine import Engine
 from simulation.models.chassis import Chassis
 from simulation.models.race_entry import RaceEntry
 
-from simulation.race_engine import RaceEngine
+from simulation.race_engine.race_engine import RaceEngine
 from simulation.session import LogEntry, LogEventType, LogDetailLevel
 from simulation.models.track import Track, Sector, MicroSector
 
@@ -20,10 +20,16 @@ def log_entry2():
 
 @pytest.fixture
 def get_track():
-    return Track("Test Track", "AUT", 1, 1, [Sector(90, True, 
-        [MicroSector(5, 5, 5, 5, 5, 15, "Micro_Sector 1"), MicroSector(5, 5, 5, 5, 5, 15)]), 
-        Sector(30, False, [MicroSector(5, 5, 5, 5, 5, 30, "Micro_Sector 3"), MicroSector(5, 5, 5, 5, 5, 30)]), 
-        Sector(90, True, [MicroSector(5, 5, 5, 5, 5, 15, "Micro_Sector 5"), MicroSector(5, 5, 5, 5, 5, 15, "Micro_Sector 6")])])
+    return Track("Test Track", "AUT", 1, 1, [Sector(90, 1000, True, False, [MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 1"), MicroSector(5, 5, 5, 5, 5, 15, 500)]), Sector(30, 1000, False, True, [MicroSector(5, 5, 5, 5, 5, 30, 500, "Micro_Sector 3"), MicroSector(5, 5, 5, 5, 5, 30, 500)]), Sector(90, 1000, True, True, [MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 5"), MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 6")])])
+
+@pytest.fixture
+def get_track2():
+    return Track("Test Track", "AUT", 1, 1, [Sector(90, 1000, True, False, [MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 1"), MicroSector(5, 5, 5, 5, 5, 15, 500)]), Sector(30, 1000, False, False, [MicroSector(5, 5, 5, 5, 5, 30, 500, "Micro_Sector 3"), MicroSector(5, 5, 5, 5, 5, 30, 500)]), Sector(90, 1000, True, False, [MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 5"), MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 6")])])
+
+@pytest.fixture
+def get_track3():
+    return Track("Test Track", "AUT", 1, 1, [Sector(90, 1000, True, True, [MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 1"), MicroSector(5, 5, 5, 5, 5, 15, 500)]), Sector(30, 1000, False, True, [MicroSector(5, 5, 5, 5, 5, 30, 500, "Micro_Sector 3"), MicroSector(5, 5, 5, 5, 5, 30, 500)]), Sector(90, 1000, True, True, [MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 5"), MicroSector(5, 5, 5, 5, 5, 15, 500, "Micro_Sector 6")])])
+
 
 @pytest.fixture
 def get_entry_list():
@@ -84,3 +90,83 @@ def test_sort_entry_list3(get_track, get_entry_list2):
     engine.initPositionDict()
     engine.sortEntryList()
     assert engine.entry_list_ == []
+
+def test_track_length_calc(get_track: Track):
+    lenght = get_track.calcLapDistance()
+    assert lenght == 3000
+
+def test_track_length_calc2(get_track2: Track):
+    lenght = get_track2.calcLapDistance()
+    assert lenght == 3000
+
+def test_track_indices(get_track: Track):
+    result = get_track.allSectorIndexFromDistance(600)
+    assert result.sector == 0 and result.micro_sector == 1
+
+def test_track_indices2(get_track2: Track):
+    result = get_track2.allSectorIndexFromDistance(600)
+    assert result.sector == 0 and result.micro_sector == 1
+
+def test_track_indices3(get_track3: Track):
+    result = get_track3.allSectorIndexFromDistance(600)
+    assert result.sector == 0 and result.micro_sector == 1
+
+def test_track_indices4(get_track: Track):
+    result = get_track.allSectorIndexFromDistance(1422.333)
+    assert result.sector == 1 and result.micro_sector == 0
+
+def test_track_indices5(get_track2: Track):
+    result = get_track2.allSectorIndexFromDistance(1422.333)
+    assert result.sector == 1 and result.micro_sector == 0
+
+def test_track_indices6(get_track3: Track):
+    result = get_track3.allSectorIndexFromDistance(1422.333)
+    assert result.sector == 1 and result.micro_sector == 0
+
+def test_track_distance_to_sector_end(get_track: Track):
+    result = get_track.calcDistanceToSectorEnd(0)
+    assert result == 1000
+
+def test_track_distance_to_sector_end2(get_track2: Track):
+    result = get_track2.calcDistanceToSectorEnd(0)
+    assert result == 1000
+
+def test_track_distance_to_sector_end3(get_track3: Track):
+    result = get_track3.calcDistanceToSectorEnd(0)
+    assert result == 1000
+
+def test_track_distance_to_sector_end4(get_track: Track):
+    result = get_track.calcDistanceToSectorEnd(0, 0)
+    assert result == 500
+
+def test_track_distance_to_sector_end5(get_track2: Track):
+    result = get_track2.calcDistanceToSectorEnd(0, 0)
+    assert result == 500
+
+def test_track_distance_to_sector_end6(get_track3: Track):
+    result = get_track3.calcDistanceToSectorEnd(0, 0)
+    assert result == 500
+
+def test_track_distance_to_sector_end7(get_track: Track):
+    result = get_track.calcDistanceToSectorEnd(1, 1)
+    assert result == 2000
+
+def test_track_distance_to_sector_end8(get_track2: Track):
+    result = get_track2.calcDistanceToSectorEnd(1, 1)
+    assert result == 2000
+
+def test_track_distance_to_sector_end9(get_track3: Track):
+    result = get_track3.calcDistanceToSectorEnd(1, 1)
+    assert result == 2000
+
+def test_track_distance_to_sector_end10(get_track: Track):
+    result = get_track.calcDistanceToSectorEnd(1, 0)
+    assert result == 1500
+
+def test_track_distance_to_sector_end11(get_track2: Track):
+    result = get_track2.calcDistanceToSectorEnd(1, 0)
+    assert result == 1500
+
+def test_track_distance_to_sector_end12(get_track3: Track):
+    result = get_track3.calcDistanceToSectorEnd(1, 0)
+    assert result == 1500
