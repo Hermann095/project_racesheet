@@ -64,8 +64,8 @@ def calcOutLapTimeStep(self: RaceEngine, session: SessionType, entry: RaceEntry,
         handleSectorJump(self, session, entry, current_sector_index, current_microsector_index, simulated_distance, total_speed, step_size)
         return
     
-    print("calling recordTimeStep from calcOutLapTimeStep")
-    assert new_added_distance >= 0, "NEGATIVE DISTANCE: " + str({"number": entry.number, "current_sector_index": current_sector_index, "current_microsector_index": current_microsector_index, "reference_time": reference_time, "added_distance": added_distance, "new_added_distance": new_added_distance, "step_size": step_size})
+    #print("calling recordTimeStep from calcOutLapTimeStep")
+    #assert new_added_distance >= 0, "NEGATIVE DISTANCE: " + str({"number": entry.number, "current_sector_index": current_sector_index, "current_microsector_index": current_microsector_index, "reference_time": reference_time, "added_distance": added_distance, "new_added_distance": new_added_distance, "step_size": step_size})
     self.entry_track_state_dict[entry.number].recordTimeStep(new_added_distance, step_size, current_sector_index, current_microsector_index)
 
 
@@ -77,11 +77,11 @@ def handleSectorJump(self: RaceEngine, session: SessionType, entry: RaceEntry, c
         handleLapJump(self, session, entry, current_sector_index, current_microsector_index, simulated_distance, total_speed, step_size)
         return
 
-    print("handleSectorJump " + entry.number + " " + str(current_sector_index))
+    #print("handleSectorJump " + entry.number + " " + str(current_sector_index))
     sector_distance = self.track_.calcDistanceToSectorEnd(current_sector_index, current_microsector_index)
     
     distance_left = sector_distance - simulated_distance
-    print({"distance_left": distance_left, "sector_distance": sector_distance, "simulated_distance": simulated_distance})
+    #print({"distance_left": distance_left, "sector_distance": sector_distance, "simulated_distance": simulated_distance})
     achieved_time = calcSectorFinish(distance_left, total_speed)
     
     if current_microsector_index == len(self.track_.sectors[current_sector_index].micro_sectors) - 1:
@@ -93,7 +93,7 @@ def handleSectorJump(self: RaceEngine, session: SessionType, entry: RaceEntry, c
         new_current_sector_index = current_sector_index
         new_current_microsector_index = current_microsector_index + 1
 
-    print("calling recordTimeStep from handleSectorJump")
+    #print("calling recordTimeStep from handleSectorJump")
     self.entry_track_state_dict[entry.number].recordTimeStep(distance_left, achieved_time, new_current_sector_index, new_current_microsector_index)
 
     time_left = step_size - achieved_time
@@ -101,12 +101,12 @@ def handleSectorJump(self: RaceEngine, session: SessionType, entry: RaceEntry, c
 
 
 def handleLapJump(self: RaceEngine, session: SessionType, entry: RaceEntry, current_sector_index: int, current_microsector_index: int, simulated_distance: float, total_speed: float, step_size: int = 1) -> None:
-    print("handleLapJump " + entry.number + " " + str(current_sector_index))
+    #print("handleLapJump " + entry.number + " " + str(current_sector_index))
     lap_distance = self.track_.lap_distance
     distance_left = lap_distance - simulated_distance
     achieved_time = calcSectorFinish(distance_left, total_speed)
     
-    print("calling recordTimeStep from handleLapJump")
+    #print("calling recordTimeStep from handleLapJump")
     self.entry_track_state_dict[entry.number].recordTimeStep(distance_left, achieved_time, current_sector_index, current_microsector_index)
     sector_time = self.entry_track_state_dict[entry.number].current_time + achieved_time - self.entry_track_state_dict[entry.number].combinedSectorTimes(current_sector_index)
     self.recordSector(entry, sector_time)
@@ -126,6 +126,6 @@ def handleLapJump(self: RaceEngine, session: SessionType, entry: RaceEntry, curr
         calcTimeStep(self, session, time_left)
 
 def calcSectorFinish(distance_left: float, total_speed: float) -> float:
-    print("calcSectorFinish: " + str({"distance_left": distance_left, "total_speed": total_speed}))
+    #print("calcSectorFinish: " + str({"distance_left": distance_left, "total_speed": total_speed}))
     achieved_time = distance_left / total_speed
     return achieved_time

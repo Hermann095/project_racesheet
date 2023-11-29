@@ -20,7 +20,7 @@ class EntryTrackState():
         return sum(x.time for x in self.current_lap.sector_times[:sector_index + 1])
     
     def recordTimeStep(self, addedDistance: float, addedTime: float, newSector: int, newMicroSector: int):
-        print("recordTimeStep")
+        #print("recordTimeStep")
         self.current_time += addedTime
         
         """
@@ -34,7 +34,7 @@ class EntryTrackState():
         """
 
         self.lap_distance = round(self.lap_distance + addedDistance, ndigits=3)
-        print({"number": self.entry.number,"addedDistance": addedDistance, "addedTime": addedTime, "newSector": newSector, "newMicroSector": newMicroSector, "current_time": self.current_time, "lap_distance": self.lap_distance }) #DEBUG
+        #print({"number": self.entry.number,"addedDistance": addedDistance, "addedTime": addedTime, "newSector": newSector, "newMicroSector": newMicroSector, "current_time": self.current_time, "lap_distance": self.lap_distance }) #DEBUG
         self.current_sector = newSector
         self.current_microsector = newMicroSector
         
